@@ -1,6 +1,7 @@
 ﻿
 
 
+
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -49,28 +50,42 @@ namespace MongoLogic.Crud
         //    await _peopleCollection.InsertOneAsync(newPerson);
 
 
-        public async Task<List<PersonDbModel>> Agerange(int minage , int maxage)
+        public async Task<(List<PersonDbModel>?, short)> Agerange(int minage, int maxage)
         {
+
+            if (await IsServerNotAlive()) return (null, 500);
+
 
             var filter = Builders<PersonDbModel>.Filter.Where(r => r.Dob.Age > minage && r.Dob.Age<maxage);
 
-            return await _peopleCollection.Find(filter).ToListAsync();
+          
+           
+              var personDbModels = await _peopleCollection.Find(filter).ToListAsync();
+
+            if(personDbModels is null)return (null, 500);
+            else if (personDbModels.Count == 0) return (null, 404);
+            else return (personDbModels, 200);
+           
+  
 
         }
 
-        public async Task<PersonDbModel?> Findby_id(string _Id)
+        public async Task<(PersonDbModel?, short)> Findby_id(string _Id)
         {
+            if (await IsServerNotAlive()) return (null, 500);
 
             var data = await _peopleCollection.FindAsync(a => a._Id == _Id);
             
             var x  = data.FirstOrDefault();
 
-            return x;
+            return (x,200);
         }
 
 
-        public async Task<List<PersonDbModel>> FindbyCustomQuary(FindsingleModel data)
+        public async Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data)
         {
+
+            if (await IsServerNotAlive()) return null;
 
             var builder = Builders<PersonDbModel>.Filter;
 
@@ -92,6 +107,7 @@ namespace MongoLogic.Crud
                 filter &= builder.Eq(a => a.Login.Uuid, data.LoginUuid);
             }
 
+          
 
             return await _peopleCollection.Find(filter).ToListAsync();
    
@@ -102,6 +118,10 @@ namespace MongoLogic.Crud
 
         public async Task<short> UpdateAsync(string id, PutPersonmodel ToUpdate)  //v1
         {
+
+            if (await IsServerNotAlive()) return 500;
+            //if (await IsServerNotAlive()) throw new TimeoutException("MongoDB server is unreachable");
+
 
             var filter = Builders<PersonDbModel>.Filter.Eq(p => p._Id, id);
             var ToupdateModel = Builders<PersonDbModel>.Update;
@@ -130,23 +150,54 @@ namespace MongoLogic.Crud
             }
 
 
-            try 
-            { 
+            
               var result = await _peopleCollection.UpdateOneAsync(filter, ToupdateModel.Combine(updates));
 
                 if (result.ModifiedCount == 1 && result.MatchedCount == 1) return 200;
                 else if (result.ModifiedCount == 0 && result.MatchedCount == 1) return 400;
                 else if (result.ModifiedCount == 0 && result.MatchedCount == 0) return 404;
-            }
-            finally
-            {
-                
-            }
             
-            
+           
+
             return 500;
-            //await _peopleCollection.ReplaceOneAsync(x => x._Id == id, ToUpdate);
+
         }
+
+
+
+
+        public async Task<short> PutAsyncFullModel(string id, PersonApiModel data)
+        {
+
+            if (await IsServerNotAlive()) return 500;
+
+            //if (await IsServerNotAlive()) throw new TimeoutException("MongoDB server is unreachable") ;
+
+            bool[] matrix = [true];
+
+           var resultmodel = await _manualmapper.ApitoDbmodel(data, matrix);
+
+            resultmodel.First.ValueRef._Id = id;
+
+            var filter = Builders<PersonDbModel>.Filter.Eq(p => p._Id, id);
+
+
+          
+
+         
+                var result = await _peopleCollection.ReplaceOneAsync(filter, resultmodel.First.ValueRef);
+                resultmodel = null;
+
+                if (result.ModifiedCount == 1 && result.MatchedCount == 1) return 200;
+                else if (result.ModifiedCount == 0 && result.MatchedCount == 1) return 400;
+                else if (result.ModifiedCount == 0 && result.MatchedCount == 0) return 404;
+
+
+            return 500;
+        }
+
+
+
 
 
 
@@ -155,8 +206,6 @@ namespace MongoLogic.Crud
         public async Task<byte> RemoveAsync(string id) 
         {
            var  x =  await _peopleCollection.DeleteOneAsync(x => x._Id == id);
-
-
 
             return (byte)x.DeletedCount;
 
@@ -209,7 +258,9 @@ namespace MongoLogic.Crud
         public async Task<string> InsertDupcheck(PersonApiModel model)
         {
 
-           bool[] matrix = await CheckifExistCustom(model);
+            if (await IsServerNotAlive()) return "500";
+
+            bool[] matrix = await CheckifExistCustom(model);
 
 
            LinkedList<PersonDbModel> axzer = await _manualmapper.ApitoDbmodel(model,matrix);
@@ -222,7 +273,7 @@ namespace MongoLogic.Crud
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex.Message);
                     return "500";
                 }
             }
@@ -252,6 +303,18 @@ namespace MongoLogic.Crud
             return Successfulinserted.ToString();
           
         }
+
+
+
+
+        private async Task<bool> IsServerNotAlive() =>  _peopleCollection.Database.Client.Cluster.Description.State == MongoDB.Driver.Core.Clusters.ClusterState.Disconnected ? true : false;  
+         
+       
+
+
+
+
+
 
     }
 }
