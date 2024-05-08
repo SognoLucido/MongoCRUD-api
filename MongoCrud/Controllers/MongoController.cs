@@ -1,25 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MongoLogic;
 using MongoLogic.CRUD;
-using MongoLogic.model;
 using MongoLogic.model.Api;
-using System.Diagnostics.Eventing.Reader;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 
 namespace MongoCrudPeopleApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class mongocrudController : ControllerBase
+    public class MongocrudController : ControllerBase
     {
 
 
         public readonly IPeopleservice _peopleservice;
         public readonly IManualmapper _mapper;
 
-        public mongocrudController(IPeopleservice peopleservice, IManualmapper mapper)
+        public MongocrudController(IPeopleservice peopleservice, IManualmapper mapper)
         {
             _peopleservice = peopleservice;
             _mapper = mapper;
@@ -54,8 +51,8 @@ namespace MongoCrudPeopleApi.Controllers
 
 
 
-        [HttpGet("firstordefault")]
-        public async Task<IActionResult> GetOne([FromQuery] MongoId id)
+        [HttpGet("firstordefault/{Mongo_Id}")]
+        public async Task<IActionResult> GetOne(MongoId id)
         {
             var data = await _peopleservice.Findby_id(id.MongoObject_Id);
 
@@ -114,11 +111,8 @@ namespace MongoCrudPeopleApi.Controllers
                 return Ok(datafromdb);
             }
             
-
-
           
         }
-
 
 
 
@@ -142,17 +136,17 @@ namespace MongoCrudPeopleApi.Controllers
 
 
 
-      
-        
+
+
         [HttpPatch("{Mongo_Id}")]
-        public async Task<IActionResult> Patch(MongoId Mongo_Id, [FromBody] PutPersonmodel model)
+        public async Task<IActionResult> Patch(MongoId Id, [FromBody] PutPersonmodel model  )
         {
 
-             
 
-          short result = await _peopleservice.UpdateAsync(Mongo_Id.MongoObject_Id, model);
 
-            if(result == 200 )
+            short result = await _peopleservice.UpdateAsync(Id.MongoObject_Id, model);
+
+            if (result == 200)
             {
                 return Ok("Successfully updated");
             }
@@ -160,32 +154,33 @@ namespace MongoCrudPeopleApi.Controllers
             {
                 return BadRequest("No changes detected.");
             }
-            else if(result == 404)
+            else if (result == 404)
             {
                 return NotFound();
             }
             else
             {
-                return StatusCode(500,"Server on fire");
+                return StatusCode(500, "Server on fire");
             }
 
         }
 
-        [HttpPut("{Mongo_Id}")]
 
-        public async Task<IActionResult> Put(MongoId Mongo_Id , [FromBody] PersonApiModel model)
+
+        [HttpPut("{Mongo_Id}")]
+        public async Task<IActionResult> Put(MongoId Id, [FromBody] PersonApiModel model)
         {
 
-            if (model.Results.Length != 1) 
+            if (model.Results.Length != 1)
             {
                 return BadRequest("1 PUT record at time");
             }
 
-           
 
-            short result = await _peopleservice.PutAsyncFullModel(Mongo_Id.MongoObject_Id, model);
 
-             
+            short result = await _peopleservice.PutAsyncFullModel(Id.MongoObject_Id, model);
+
+
 
             if (result == 200)
             {
@@ -209,21 +204,26 @@ namespace MongoCrudPeopleApi.Controllers
 
 
 
-        [HttpDelete("{Mongo_id}")]
-        public async Task<IActionResult> Delete(MongoId Mongo_Id)
+        [HttpDelete("{Mongo_Id}")]
+        public async Task<IActionResult> Delete(MongoId Id)
         {
-           byte result = await _peopleservice.RemoveAsync(Mongo_Id.MongoObject_Id);
+            byte result = await _peopleservice.RemoveAsync(Id.MongoObject_Id);
 
-            if(result > 0)
+            if (result > 0)
             {
                 return Ok();
             }
-           
-                return StatusCode(404, "record Notfound");
-          
 
-            
+            return StatusCode(404, "record Notfound");
+
 
         }
+
+
+
+
+
+
+
     }
 }
