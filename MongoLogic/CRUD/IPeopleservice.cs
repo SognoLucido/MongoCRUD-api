@@ -19,5 +19,9 @@ namespace MongoLogic.CRUD
 
         Task<short> PutAsyncFullModel(string id, PersonApiModel data);
 
+        Task<long?> GetTotalItems();
+
+        Task<List<PersonDbModel>?> GetXitems(int numb);
+
     }
 }

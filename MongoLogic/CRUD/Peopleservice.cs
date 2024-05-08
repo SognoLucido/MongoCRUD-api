@@ -3,12 +3,14 @@
 
 
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 using MongoLogic.CRUD;
 
 using MongoLogic.model;
 using MongoLogic.model.Api;
+using System;
 using System.Reflection;
 using System.Text;
 
@@ -22,14 +24,14 @@ namespace MongoLogic.Crud
 
 
         private readonly IManualmapper _manualmapper;
-       
 
-        public Peopleservice(IOptions<MongoSettings> mongoSettings , IManualmapper manualmapper) 
+
+        public Peopleservice(IOptions<MongoSettings> mongoSettings, IManualmapper manualmapper)
         {
 
-          
+
             _manualmapper = manualmapper;
-           
+
             var mongoClient = new MongoClient(mongoSettings.Value.ConnectionString);
 
             var mongoDatabase = mongoClient.GetDatabase(mongoSettings.Value.DatabaseName);
@@ -37,7 +39,7 @@ namespace MongoLogic.Crud
             _peopleCollection = mongoDatabase.GetCollection<PersonDbModel>(mongoSettings.Value.CollectionName);
 
 
-           
+
         }
 
         public async Task<List<PersonDbModel>> GetAsync() =>
@@ -48,6 +50,45 @@ namespace MongoLogic.Crud
 
         //public async Task CreateAsync(PersonDbModel newPerson) =>
         //    await _peopleCollection.InsertOneAsync(newPerson);
+
+
+
+
+        public async Task<List<PersonDbModel>?> GetXitems(int numb)
+        {
+            if (await IsServerNotAlive()) { };
+
+            // var pipeline = new BsonDocument
+            //{
+            //    { "$sample" ,new BsonDocument("size", 2)}
+
+            // };
+
+            var pipeline = new List<BsonDocument>
+            {
+                new BsonDocument("$sample", new BsonDocument("size", numb)),
+               
+            };
+
+
+            var result = _peopleCollection.Aggregate<PersonDbModel>(pipeline).ToListAsync();
+
+
+            return result.Result;
+
+        }
+
+
+
+
+        public async Task<long?> GetTotalItems() 
+        {
+            if (await IsServerNotAlive()) return null;
+
+
+             return await _peopleCollection.CountDocumentsAsync(FilterDefinition<PersonDbModel>.Empty);
+        }
+
 
 
         public async Task<(List<PersonDbModel>?, short)> Agerange(int minage, int maxage)
@@ -70,6 +111,8 @@ namespace MongoLogic.Crud
 
         }
 
+
+
         public async Task<(PersonDbModel?, short)> Findby_id(string _Id)
         {
             if (await IsServerNotAlive()) return (null, 500);
@@ -80,6 +123,8 @@ namespace MongoLogic.Crud
 
             return (x,200);
         }
+
+
 
 
         public async Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data)

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoCrudPeopleApi.Apimodels;
 using MongoLogic;
 using MongoLogic.CRUD;
+using MongoLogic.model;
 using MongoLogic.model.Api;
+using System.ComponentModel.DataAnnotations;
 
 
 
@@ -26,9 +29,9 @@ namespace MongoCrudPeopleApi.Controllers
 
         [HttpGet("byage")]
         public async Task<IActionResult> GetbyAgeRange([FromQuery] AgerangeModel age)
-        {           
+        {
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if (age.MinAge > age.MaxAge || age.MinAge == age.MaxAge) return BadRequest("minAge < maxAge");
 
@@ -45,7 +48,7 @@ namespace MongoCrudPeopleApi.Controllers
             else if (Resultcode.Item2 == 200) return Ok(Resultcode.Item1);
             else return StatusCode(500, "ops server gone");
 
-         
+
         }
 
 
@@ -60,17 +63,17 @@ namespace MongoCrudPeopleApi.Controllers
             {
                 return Ok(data.Item1);
             }
-            else if(data.Item1 is null)
+            else if (data.Item1 is null)
             {
                 return NotFound();
             }
             else
             {
-               return StatusCode(500, "server error");
+                return StatusCode(500, "server error");
             }
 
-           
-            
+
+
         }
 
 
@@ -81,7 +84,7 @@ namespace MongoCrudPeopleApi.Controllers
 
             if (ModelState.IsValid)
             {
-                if ( findbyone.Name is null && findbyone.LastName is null && findbyone.LoginUuid is null)
+                if (findbyone.Name is null && findbyone.LastName is null && findbyone.LoginUuid is null)
                 {
                     return BadRequest("At least one parameter is required");
                 }
@@ -104,34 +107,73 @@ namespace MongoCrudPeopleApi.Controllers
             }
             if (datafromdb.Count == 0)
             {
-                return StatusCode(404,"record Notfound");
+                return StatusCode(404, "record Notfound");
             }
             else
             {
                 return Ok(datafromdb);
             }
-            
-          
+
+
         }
 
 
-
-        
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] PersonApiModel Value)
+        //Task<long?> GetTotalItems()
+        [HttpGet("totalitems")]
+        public async Task<IActionResult> GetCountitems()
         {
+           
+            long? count = await _peopleservice.GetTotalItems();
 
-            string result = await _peopleservice.InsertDupcheck(Value);
 
-            if (result == "500")
+            if (count is null)
             {
                 return StatusCode(500, "An internal server error occurred");
             }
-            else
-            {
-                return Ok(result);
-            }
+            else return Ok(count);
 
+
+        }
+
+        [HttpGet("{Randomppl}")]
+
+        public async Task<IActionResult> GetrandomPerson([Range(1,50)]int Randomppl)
+        {
+
+
+
+
+          List<PersonDbModel>? result =  await  _peopleservice.GetXitems(Randomppl);
+
+            if (result is null)
+            {
+                return StatusCode(500, "An internal server error occurred");
+            }
+            else return Ok(result);
+
+
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] PersonApiModel Value)
+        {
+            if(Value.Results.Length > 1000)
+            {
+                return BadRequest("POST too big");
+            }
+           
+                string result = await _peopleservice.InsertDupcheck(Value);
+
+                if (result == "500")
+                {
+                    return StatusCode(500, "An internal server error occurred");
+                }
+                else
+                {
+                    return Ok(result);
+                }
+           
         }
 
 

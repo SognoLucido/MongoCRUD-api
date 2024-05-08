@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace MongoLogic.model.Api
+namespace MongoCrudPeopleApi.Apimodels
 {
     public class MongoId
     {
