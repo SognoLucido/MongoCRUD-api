@@ -26,15 +26,16 @@ namespace MongoCrudPeopleApi.Controllers
         }
 
 
-
-        [HttpGet("byage")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet("byage")]  
         public async Task<IActionResult> GetbyAgeRange([FromQuery] AgerangeModel age)
         {
+
 
             if (ModelState.IsValid)
             {
                 if (age.MinAge > age.MaxAge || age.MinAge == age.MaxAge) return BadRequest("minAge < maxAge");
-
+                //else if ((age.MaxAge - age.MinAge) > 10) return BadRequest("max range cap 10 maxAge-minAge");
             }
             else
             {
@@ -42,6 +43,7 @@ namespace MongoCrudPeopleApi.Controllers
             }
 
             var Resultcode = await _peopleservice.Agerange(age.MinAge, age.MaxAge);
+
 
 
             if (Resultcode.Item2 == 404) return NotFound();
@@ -135,8 +137,8 @@ namespace MongoCrudPeopleApi.Controllers
 
         }
 
+        
         [HttpGet("{Randomppl}")]
-
         public async Task<IActionResult> GetrandomPerson([Range(1,50)]int Randomppl)
         {
 

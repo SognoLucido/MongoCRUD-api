@@ -10,7 +10,7 @@ using MongoLogic.CRUD;
 
 using MongoLogic.model;
 using MongoLogic.model.Api;
-using System;
+
 using System.Reflection;
 using System.Text;
 
@@ -56,7 +56,7 @@ namespace MongoLogic.Crud
 
         public async Task<List<PersonDbModel>?> GetXitems(int numb)
         {
-            if (await IsServerNotAlive()) { };
+            if (await IsServerNotAlive())  return null; ;
 
             // var pipeline = new BsonDocument
             //{
