@@ -1,3 +1,8 @@
+## TODO
+- [ ] Optimize queries
+- [ ] Unit/Integ testing
+- [ ] Docker implementation
+
 # MongoCrud
 CRUD api Based on randomuser.me/api model
 
