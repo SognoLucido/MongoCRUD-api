@@ -10,9 +10,8 @@ namespace MongoLogic.model;
 public class PersonDbModel
 {
 
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? _Id { get; set; }
+  
+    public ObjectId _Id { get; set; }
 
     public string Gender { get; set; }
     public Name Name { get; set; } 

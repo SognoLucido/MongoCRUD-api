@@ -1,0 +1,19 @@
+services:
+  mongocrudpeopleapi:
+    image: ${DOCKER_REGISTRY-}mongocrudpeopleapi
+    build:
+      context: .
+      dockerfile: MongoCrud/Dockerfile
+
+  mongodb:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    volumes:
+    - mongoData:/data/db
+
+volumes:
+    mongoData:
