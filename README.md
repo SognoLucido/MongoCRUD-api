@@ -1,4 +1,5 @@
 ## TODO
+I'm rewriting this mess – in progress
 - [ ] Optimize queries
 - [ ] Unit/Integ testing
 - [ ] Docker implementation
