@@ -1,4 +1,4 @@
-﻿using MongoLogic.model;
+﻿using Mongodb.Models;
 using MongoLogic.model.Api;
 
 
@@ -8,7 +8,7 @@ namespace MongoLogic.CRUD
     {
         Task<(PersonDbModel?,short)> Findby_id(string _Id);
         Task<(List<PersonDbModel>,short)> Agerange(int minage, int maxage);
-        Task<string> InsertDupcheck(PersonApiModel model);
+        Task<string> Insert(PersonApiModel model, bool duplicatecheck);
         Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data);
         Task<byte> RemoveAsync(string id);
         Task<short> UpdateAsync(string id, PutPersonmodel ToUpdate);

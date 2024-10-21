@@ -11,7 +11,7 @@ public enum Database
 
 public enum Collection
 {
-    ppl
+    User
 }
 
 public class MongoContext

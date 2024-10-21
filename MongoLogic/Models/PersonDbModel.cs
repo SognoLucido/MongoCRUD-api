@@ -1,8 +1,20 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
-namespace MongoLogic.model;
+namespace Mongodb.Models;
+
+
+
+
+public class PersonApiModel
+{
+    public List<PersonDbModel> Results { get; set; }
+
+}
 
 
 
@@ -10,13 +22,21 @@ namespace MongoLogic.model;
 public class PersonDbModel
 {
 
-  
-    public ObjectId _Id { get; set; }
+    [JsonIgnore]
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId _id { get; set; }
 
     public string Gender { get; set; }
-    public Name Name { get; set; } 
+    public Name Name { get; set; }
     public Location Location { get; set; }
-    public string Email { get; set; }
+
+    [JsonIgnore]
+    [BsonIgnore]
+    private string _email ;
+
+    public string Email { get => _email; set { _email = value.ToLower(); } }
+
     public Login Login { get; set; }
     public Dob Dob { get; set; }
     public Dob Registered { get; set; }
@@ -45,7 +65,39 @@ public class Location
     public string City { get; set; }
     public string State { get; set; }
     public string Country { get; set; }
-    public string Postcode { get; set; }
+
+
+    [JsonIgnore]
+    [BsonElement("Postcode")]
+    public string FormattedPostcode { get; set; }
+
+
+    [Required]
+    [BsonIgnore]
+    public object Postcode
+    {
+        //get => FPostcode ;
+        set
+        {
+
+            if (value is JsonElement jsonElement)
+            {
+
+                switch (jsonElement.ValueKind)
+                {
+                    case JsonValueKind.String: FormattedPostcode = jsonElement.GetString(); break;
+                    default: FormattedPostcode = jsonElement.GetRawText(); break;
+                }
+
+            }
+
+        }
+    }
+
+
+
+
+
     public Coordinates Coordinates { get; set; }
     public Timezone Timezone { get; set; }
 }

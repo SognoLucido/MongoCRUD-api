@@ -4,12 +4,11 @@
 
 using Microsoft.Extensions.Options;
 using Mongodb;
+using Mongodb.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-
+using MongoDB.Driver.Core.Clusters;
 using MongoLogic.CRUD;
-
-using MongoLogic.model;
 using MongoLogic.model.Api;
 
 using System.Reflection;
@@ -19,21 +18,21 @@ using System.Text;
 
 namespace MongoLogic.Crud
 {
-  
+
 
 
     public class Peopleservice : IPeopleservice
     {
         private readonly IMongoCollection<PersonDbModel> _pplCollection;
-        private readonly IManualmapper _manualmapper;
+        //private readonly IManualmapper _manualmapper;
 
 
-        public Peopleservice( IManualmapper manualmapper,MongoContext context)
+        public Peopleservice(MongoContext context)
         {
 
-            _manualmapper = manualmapper;
+           
 
-            _pplCollection = context.Peopledb.GetCollection<PersonDbModel>(Collection.ppl.ToString());
+            _pplCollection = context.Peopledb.GetCollection<PersonDbModel>(Collection.User.ToString());
 
             //var mongoClient = new MongoClient(mongoSettings.ConnectionString);
 
@@ -72,10 +71,59 @@ namespace MongoLogic.Crud
             throw new NotImplementedException();
         }
 
-        public Task<string> InsertDupcheck(PersonApiModel model)
+
+      
+        /// //////////////////////
+
+        public async Task<string> Insert(PersonApiModel model, bool dcheck)   
         {
-            throw new NotImplementedException();
+            string message = "no duplicates";
+
+            if (dcheck)
+            {
+
+                var EmailTocheck = model.Results.Select(z => z.Email.ToLower()).ToArray();
+
+                var filter = Builders<PersonDbModel>.Filter.In(p => p.Email, EmailTocheck);
+
+                var Getclones = await _pplCollection
+                    .Distinct(x => x.Email, filter)
+                    //.Project(x => x.Email)
+                    .ToListAsync();
+
+
+                if (Getclones.Count > 0)
+                {
+                    model.Results.RemoveAll(x => Getclones.Contains(x.Email));
+                    message = "duplicates found";
+                }
+            }
+
+
+            if (model.Results.Count > 0)
+                try
+                {
+                    await _pplCollection.InsertManyAsync(model.Results);
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            else return $"{message}, nothing to add";
+
+
+            return message;
+
         }
+
+
+
+
+
+
+
+        private record Email (string email);
 
         public Task<short> PutAsyncFullModel(string id, PersonApiModel data)
         {

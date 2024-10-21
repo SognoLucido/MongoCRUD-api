@@ -25,8 +25,8 @@ builder.Services.AddSingleton<MongoContext>(_ => new (connectionString));
 
 //builder.Services.Configure<MongoSettings>(builder.Configuration.GetValue<string>("INIT_VAR");
 
-builder.Services.AddSingleton<IPeopleservice,Peopleservice>();
-builder.Services.AddSingleton<IManualmapper,Manualmapper>();
+builder.Services.AddScoped<IPeopleservice,Peopleservice>();
+//builder.Services.AddSingleton<IManualmapper,Manualmapper>();
 
 
 

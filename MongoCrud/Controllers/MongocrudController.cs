@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MongoCrudPeopleApi.Apimodels;
 using Mongodb;
+using Mongodb.Models;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using MongoLogic;
 using MongoLogic.CRUD;
-using MongoLogic.model;
 using MongoLogic.model.Api;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,16 +29,15 @@ public class MongocrudController : ControllerBase
 
     
     private readonly IPeopleservice _peopleservice;
-    private readonly IManualmapper _mapper;
-    private readonly MongoContext _context;
+    //private readonly IManualmapper _mapper;
+    //private readonly MongoContext _context;
 
 
 
-    public MongocrudController(IPeopleservice peopleservice, IManualmapper mapper,MongoContext context , IConfiguration conf)
+    public MongocrudController(IPeopleservice peopleservice,/* IManualmapper mapper,*/MongoContext context )
     {
         _peopleservice = peopleservice;
-        _mapper = mapper;
-        _context = context;
+     
 
     }
 
@@ -213,24 +209,25 @@ public class MongocrudController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] PersonApiModel Value)
+    public async Task<IActionResult> Post([FromBody] PersonApiModel Value,bool dupecheck = true)
     {
-        if(Value.Results.Length > 1000)
+        if(Value.Results.Count > 1000)
         {
             return BadRequest("POST too big");
         }
-       
-            string result = await _peopleservice.InsertDupcheck(Value);
 
-            if (result == "500")
-            {
-                return StatusCode(500, "An internal server error occurred");
-            }
-            else
-            {
-                return Ok(result);
-            }
-       
+        string result = await _peopleservice.Insert(Value,dupecheck);
+
+        //if (result == "500")
+        //{
+        //    return StatusCode(500, "An internal server error occurred");
+        //}
+        //else
+        //{
+        //    return Ok(result);
+        //}
+
+        return Ok(result);
     }
 
 
@@ -270,7 +267,7 @@ public class MongocrudController : ControllerBase
     public async Task<IActionResult> Put(MongoId Mongo_Id, [FromBody] PersonApiModel model)
     {
 
-        if (model.Results.Length != 1)
+        if (model.Results.Count != 1)
         {
             return BadRequest("1 PUT record at time");
         }

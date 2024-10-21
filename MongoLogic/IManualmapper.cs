@@ -1,5 +1,5 @@
 ﻿using MongoLogic.model.Api;
-using MongoLogic.model;
+using Mongodb.Models;
 
 
 namespace MongoLogic
