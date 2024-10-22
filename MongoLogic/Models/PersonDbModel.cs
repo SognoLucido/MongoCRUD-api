@@ -12,6 +12,7 @@ namespace Mongodb.Models;
 
 public class PersonApiModel
 {
+    
     public List<PersonDbModel> Results { get; set; }
 
 }

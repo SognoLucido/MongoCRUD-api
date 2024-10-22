@@ -2,6 +2,9 @@
 
 
 
+using Amazon.Runtime.Internal.Util;
+using DnsClient.Internal;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mongodb;
 using Mongodb.Models;
@@ -10,9 +13,10 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core.Clusters;
 using MongoLogic.CRUD;
 using MongoLogic.model.Api;
-
+using System.Data;
 using System.Reflection;
 using System.Text;
+using ZstdSharp;
 
 
 
@@ -24,24 +28,37 @@ namespace MongoLogic.Crud
     public class Peopleservice : IPeopleservice
     {
         private readonly IMongoCollection<PersonDbModel> _pplCollection;
-        //private readonly IManualmapper _manualmapper;
+        private readonly ILogger<Peopleservice> log;
 
-
-        public Peopleservice(MongoContext context)
+        public Peopleservice(MongoContext context, ILogger<Peopleservice> logger)
         {
 
-           
 
             _pplCollection = context.Peopledb.GetCollection<PersonDbModel>(Collection.User.ToString());
 
-            //var mongoClient = new MongoClient(mongoSettings.ConnectionString);
-
-           // var mongoDatabase = mongoClient.GetDatabase(mongoSettings.Value.DatabaseName);
-
-          //  _peopleCollection = mongoDatabase.GetCollection<PersonDbModel>(mongoSettings.Value.CollectionName);
+            log = logger;
 
 
         }
+
+
+        public async Task TestLog()
+        {
+
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception ex) 
+            {
+                log.LogError("This is an error log. {}",ex.Message);
+            }
+         
+           
+       
+        }
+
+
 
         public Task<(List<PersonDbModel>, short)> Agerange(int minage, int maxage)
         {
@@ -73,29 +90,36 @@ namespace MongoLogic.Crud
 
 
       
-        /// //////////////////////
+        ///////////////////////////
 
-        public async Task<string> Insert(PersonApiModel model, bool dcheck)   
+        public async Task<(int,string?)> Insert(PersonApiModel model, bool dcheck)   
         {
-            string message = "no duplicates";
+
+            StringBuilder sb = new(); 
+            int statusCode = 201;
+            int Items = model.Results.Count;
+            
 
             if (dcheck)
             {
 
                 var EmailTocheck = model.Results.Select(z => z.Email.ToLower()).ToArray();
-
                 var filter = Builders<PersonDbModel>.Filter.In(p => p.Email, EmailTocheck);
 
                 var Getclones = await _pplCollection
                     .Distinct(x => x.Email, filter)
-                    //.Project(x => x.Email)
                     .ToListAsync();
-
 
                 if (Getclones.Count > 0)
                 {
+                   
+
                     model.Results.RemoveAll(x => Getclones.Contains(x.Email));
-                    message = "duplicates found";
+
+                    Items -= model.Results.Count;
+
+                    sb.AppendLine("Duplicate/s found");
+                    statusCode = 409;
                 }
             }
 
@@ -105,15 +129,29 @@ namespace MongoLogic.Crud
                 {
                     await _pplCollection.InsertManyAsync(model.Results);
 
+                    if (statusCode == 409) 
+                    {
+                        sb.AppendLine("Duplicates filtered, the remaining records were inserted ");
+                        sb.AppendLine($"{Items} duplicate/s removed");
+                    };
+
+                    sb.AppendLine($"{model.Results.Count} item/s inserted" );
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.LogError("Insert Item : {}" ,ex.Message);
+                    statusCode = 500;
+                    sb.Clear();
+                    sb.AppendLine("An error occurred, request aborted ");
+
                 }
-            else return $"{message}, nothing to add";
+            else 
+            {
+                sb.AppendLine("Filtered out duplicates, no items added");
+            }
 
 
-            return message;
+            return (statusCode,sb.ToString());
 
         }
 
@@ -140,7 +178,7 @@ namespace MongoLogic.Crud
             throw new NotImplementedException();
         }
 
-
+        
 
         //public async Task<PersonDbModel?> GetAsync(string id) =>
         //    await _peopleCollection.Find(x => x.Id == id).FirstOrDefaultAsync();

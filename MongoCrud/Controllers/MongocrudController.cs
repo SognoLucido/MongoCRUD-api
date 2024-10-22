@@ -22,55 +22,35 @@ public class User
 
 
 
-[Route("api")]
+[Route("api/user")]
 [ApiController]
 public class MongocrudController : ControllerBase
 {
 
     
-    private readonly IPeopleservice _peopleservice;
-    //private readonly IManualmapper _mapper;
-    //private readonly MongoContext _context;
+    private readonly IPeopleservice dbcall;
 
 
-
-    public MongocrudController(IPeopleservice peopleservice,/* IManualmapper mapper,*/MongoContext context )
+    public MongocrudController(IPeopleservice peopleservice,MongoContext context )
     {
-        _peopleservice = peopleservice;
-     
+        dbcall = peopleservice;
 
     }
 
 
 
 
-    //[HttpGet("YOZ")]
-    //public async Task<IActionResult> TestEndpoint() 
-    //{
+    [HttpGet("YOZ")]
+    public async Task<IActionResult> TestEndpoint()
+    {
+
+       await dbcall.TestLog();
+
+         return Ok();
+    }
 
 
-    //   ////var database = _context.GetDatabase(Database.Peopledb.ToString());
-    //   //var collection = _context.GetCollection<User>("Users");
-
-
-    //   // var usertest = new User()
-    //   // {
-    //   //     Email = "fra@test.com",
-    //   //     Name = "fra"
-    //   // };
-
-
-    //   //await  collection.InsertOneAsync(usertest);
-
-
-    //   // return Ok();
-    //}
-
-
-
-
-
-
+   //---------------------- LOG ENDPOINT = READFILE AND FILTER IT BY ENDPOINT/QUERY/ERR-WARNING-info/ LIMIT last 5 last 20 
 
 
 
@@ -93,7 +73,7 @@ public class MongocrudController : ControllerBase
             return BadRequest("invalid Query");
         }
 
-        var Resultcode = await _peopleservice.Agerange(age.MinAge, age.MaxAge);
+        var Resultcode = await dbcall.Agerange(age.MinAge, age.MaxAge);
 
 
 
@@ -110,7 +90,7 @@ public class MongocrudController : ControllerBase
     [HttpGet("{Mongo_Id}")]
     public async Task<IActionResult> GetOne(MongoId Mongo_Id)
     {
-        var data = await _peopleservice.Findby_id(Mongo_Id.MongoObject_Id);
+        var data = await dbcall.Findby_id(Mongo_Id.MongoObject_Id);
 
         if (data.Item2 == 200 && data.Item1 is not null)
         {
@@ -151,7 +131,7 @@ public class MongocrudController : ControllerBase
         }
 
 
-        var datafromdb = await _peopleservice.FindbyCustomQuary(findbyone);
+        var datafromdb = await dbcall.FindbyCustomQuary(findbyone);
 
 
         if (datafromdb is null)
@@ -176,7 +156,7 @@ public class MongocrudController : ControllerBase
     public async Task<IActionResult> GetCountitems()
     {
        
-        long? count = await _peopleservice.GetTotalItems();
+        long? count = await dbcall.GetTotalItems();
 
 
         if (count is null)
@@ -194,9 +174,7 @@ public class MongocrudController : ControllerBase
     {
 
 
-
-
-      List<PersonDbModel>? result =  await  _peopleservice.GetXitems(Randomppl);
+      List<PersonDbModel>? result =  await dbcall.GetXitems(Randomppl);
 
         if (result is null)
         {
@@ -208,26 +186,26 @@ public class MongocrudController : ControllerBase
 
     }
 
+    /// <summary>
+    ///  insert User data 1:1 from https://randomuser.me/api?results=3 , copy and paste in the post here
+    /// </summary>
+    /// <param name="dupecheck"> check duplicates before insert in the database (true,false) , This does not remove existing records in the database</param>
+    /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] PersonApiModel Value,bool dupecheck = true)
+    public async Task<IActionResult> PostUserItemModel([FromBody][Required] PersonApiModel Value,bool dupecheck = true)
     {
-        if(Value.Results.Count > 1000)
+
+        if (Value.Results.Count == 0) return BadRequest();
+        else if (Value.Results.Count > 1000)
         {
             return BadRequest("POST too big");
         }
+       
 
-        string result = await _peopleservice.Insert(Value,dupecheck);
+        var (code,messg) = await dbcall.Insert(Value,dupecheck);
 
-        //if (result == "500")
-        //{
-        //    return StatusCode(500, "An internal server error occurred");
-        //}
-        //else
-        //{
-        //    return Ok(result);
-        //}
 
-        return Ok(result);
+        return StatusCode(code,messg);
     }
 
 
@@ -240,7 +218,7 @@ public class MongocrudController : ControllerBase
 
 
 
-        short result = await _peopleservice.UpdateAsync(Mongo_Id.MongoObject_Id, model);
+        short result = await dbcall.UpdateAsync(Mongo_Id.MongoObject_Id, model);
 
         if (result == 200)
         {
@@ -274,7 +252,7 @@ public class MongocrudController : ControllerBase
 
 
 
-        short result = await _peopleservice.PutAsyncFullModel(Mongo_Id.MongoObject_Id, model);
+        short result = await dbcall.PutAsyncFullModel(Mongo_Id.MongoObject_Id, model);
 
 
 
@@ -303,7 +281,7 @@ public class MongocrudController : ControllerBase
     [HttpDelete("{Mongo_Id}")]
     public async Task<IActionResult> Delete(MongoId Mongo_Id)
     {
-        byte result = await _peopleservice.RemoveAsync(Mongo_Id.MongoObject_Id);
+        byte result = await dbcall.RemoveAsync(Mongo_Id.MongoObject_Id);
 
         if (result > 0)
         {
