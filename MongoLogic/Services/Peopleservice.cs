@@ -59,10 +59,29 @@ namespace MongoLogic.Crud
         }
 
 
-
-        public Task<(List<PersonDbModel>, short)> Agerange(int minage, int maxage)
+   
+        /// /////////////////////////////////
+     
+        public async Task<List<PersonDbModel>?> GetAgerangeUserItem(int minage, int maxage)
         {
-            throw new NotImplementedException();
+
+            List<PersonDbModel>? data = new();
+
+            var filter = Builders<PersonDbModel>.Filter.Gte(p => p.Dob.Age, minage) &
+                    Builders<PersonDbModel>.Filter.Lte(p => p.Dob.Age, maxage);
+
+
+            try
+            {
+                data = await _pplCollection.Find(filter).ToListAsync();
+            }
+            catch (MongoConnectionException ex)
+            {
+               log.LogError("Database Connection error{}",ex.Message);
+            }
+
+           return data.Count == 0 ? null : data;
+          
         }
 
         public Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data)
@@ -90,7 +109,7 @@ namespace MongoLogic.Crud
 
 
       
-        ///////////////////////////
+        
 
         public async Task<(int,string?)> Insert(PersonApiModel model, bool dcheck)   
         {

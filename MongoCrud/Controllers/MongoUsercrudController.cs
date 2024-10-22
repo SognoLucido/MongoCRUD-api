@@ -24,14 +24,14 @@ public class User
 
 [Route("api/user")]
 [ApiController]
-public class MongocrudController : ControllerBase
+public class MongoUsercrudController : ControllerBase
 {
 
     
     private readonly IPeopleservice dbcall;
 
 
-    public MongocrudController(IPeopleservice peopleservice,MongoContext context )
+    public MongoUsercrudController(IPeopleservice peopleservice,MongoContext context )
     {
         dbcall = peopleservice;
 
@@ -39,50 +39,78 @@ public class MongocrudController : ControllerBase
 
 
 
-
-    [HttpGet("YOZ")]
-    public async Task<IActionResult> TestEndpoint()
+    ///// <summary>
+    ///// Retrieves users based on age range.
+    ///// </summary>
+    ///// <remarks>
+    ///// Swagger can't handle the load, so the result of this endpoint will be truncated.
+    ///// If you want to check the real limits, make a manual GET request directly in the browser or with Postman, etc.:
+    /////  /api/user/byage-nolimit?minage=1&maxage=100
+    ///// </remarks>
+    ///// <param name="minage">Minimum age.</param>
+    ///// <param name="maxage">Maximum age.</param>
+    ///// <returns>A list of users within the specified age range.</returns>
+    [HttpGet("byage-limit")]
+    public async Task<IActionResult> GetbyAgeRange(
+        [FromQuery][Required][Range(0, 150)] int minage,
+        [FromQuery][Required][Range(0, 150)] int maxage)
     {
 
-       await dbcall.TestLog();
-
-         return Ok();
-    }
+        if (minage > maxage) return BadRequest("minAge > maxAge");
 
 
-   //---------------------- LOG ENDPOINT = READFILE AND FILTER IT BY ENDPOINT/QUERY/ERR-WARNING-info/ LIMIT last 5 last 20 
+        var Result = await dbcall.GetAgerangeUserItem(minage, maxage);
 
 
-
-
-
-
-    //[ApiExplorerSettings(IgnoreApi = true)]
-    [HttpGet("byage")]  
-    public async Task<IActionResult> GetbyAgeRange([FromQuery] AgerangeModel age)
-    {
-
-
-        if (ModelState.IsValid)
-        {
-            if (age.MinAge > age.MaxAge || age.MinAge == age.MaxAge) return BadRequest("minAge < maxAge");
-            //else if ((age.MaxAge - age.MinAge) > 10) return BadRequest("max range cap 10 maxAge-minAge");
-        }
+        if (Result is null) return NotFound();
         else
         {
-            return BadRequest("invalid Query");
+            if (Result.Count < 100) return Ok(Result);
+
+            var truncList = Result.Take(100).ToList();
+
+            return Ok(truncList);
         }
 
-        var Resultcode = await dbcall.Agerange(age.MinAge, age.MaxAge);
-
-
-
-        if (Resultcode.Item2 == 404) return NotFound();
-        else if (Resultcode.Item2 == 200) return Ok(Resultcode.Item1);
-        else return StatusCode(500, "ops server gone");
 
 
     }
+
+
+
+    //[HttpGet("YOZ")]
+    //public async Task<IActionResult> TestEndpoint()
+    //{
+
+    //   await dbcall.TestLog();
+
+    //     return Ok();
+    //}
+
+
+    //---------------------- LOG ENDPOINT = READFILE AND FILTER IT BY ENDPOINT/QUERY/ERR-WARNING-info/ LIMIT last 5 last 20 
+
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet("byage-nolimit")]
+    public async Task<IActionResult> GetbyAgeRange_nolimit(
+       [FromQuery][Required][Range(0, 150)] int minage,
+       [FromQuery][Required][Range(0, 150)] int maxage)
+    {
+
+        if (minage > maxage) return BadRequest("minAge > maxAge");
+
+
+        var Result = await dbcall.GetAgerangeUserItem(minage, maxage);
+
+
+        return Result is null ? NotFound() : Ok(Result);
+
+
+
+    }
+
+
 
 
 

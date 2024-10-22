@@ -10,7 +10,7 @@ namespace MongoLogic.CRUD
 
         Task TestLog();
         Task<(PersonDbModel?,short)> Findby_id(string _Id);
-        Task<(List<PersonDbModel>,short)> Agerange(int minage, int maxage);
+        Task<List<PersonDbModel>?> GetAgerangeUserItem(int minage, int maxage);
         Task<(int,string?)> Insert(PersonApiModel model, bool duplicatecheck);
         Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data);
         Task<byte> RemoveAsync(string id);
