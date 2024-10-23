@@ -35,7 +35,6 @@ public class PersonDbModel
     [JsonIgnore]
     [BsonIgnore]
     private string _email ;
-
     public string Email { get => _email; set { _email = value.ToLower(); } }
 
     public Login Login { get; set; }
@@ -135,6 +134,7 @@ public partial class Login
 public class Name
 {
     public string? Title { get; set; }
+    
     public string? First { get; set; }
     public string? Last { get; set; }
 }

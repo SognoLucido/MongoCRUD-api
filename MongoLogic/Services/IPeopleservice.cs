@@ -1,4 +1,5 @@
 ﻿using Mongodb.Models;
+using Mongodb.Models.Dto;
 using MongoLogic.model.Api;
 
 
@@ -7,7 +8,7 @@ namespace MongoLogic.CRUD
     public interface IPeopleservice
     {
 
-
+        Task<List<PersonDbModel>?> SearchUsers(Usersearch userdata);
         Task TestLog();
         Task<(PersonDbModel?,short)> Findby_id(string _Id);
         Task<List<PersonDbModel>?> GetAgerangeUserItem(int minage, int maxage);
