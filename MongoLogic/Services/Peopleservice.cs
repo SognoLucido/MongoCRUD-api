@@ -157,18 +157,30 @@ public class Peopleservice : IPeopleservice
   
     
 
-    public async Task<(int,string?)> Insert(PersonApiModel model, bool dcheck)   
+    public async Task<(int,string?)> Insert(PersonApiModel rawmodel, bool dcheck)   
     {
 
         StringBuilder sb = new(); 
         int statusCode = 201;
-        int Items = model.Results.Count;
-        
+        int RawItemscount = rawmodel.Results.Count;
+        int duplecoun = 0;
+
+
+        sb.AppendLine("Total items : " + RawItemscount);
+        rawmodel.Results = rawmodel.Results.DistinctBy(z => z.Email).ToList();
+
+        if (RawItemscount != rawmodel.Results.Count)
+        {
+            duplecoun += RawItemscount - rawmodel.Results.Count;
+            sb.AppendLine($"{duplecoun} Duplicate/s  found in the POST request and removed");
+          
+            RawItemscount = rawmodel.Results.Count;
+        }
 
         if (dcheck)
         {
 
-            var EmailTocheck = model.Results.Select(z => z.Email.ToLower()).ToArray();
+            var EmailTocheck = rawmodel.Results.Select(z => z.Email).ToArray();
             var filter = Builders<PersonDbModel>.Filter.In(p => p.Email, EmailTocheck);
 
             var Getclones = await _pplCollection
@@ -179,28 +191,38 @@ public class Peopleservice : IPeopleservice
             {
                
 
-                model.Results.RemoveAll(x => Getclones.Contains(x.Email));
+                rawmodel.Results.RemoveAll(x => Getclones.Contains(x.Email));
 
-                Items -= model.Results.Count;
+                duplecoun += RawItemscount - rawmodel.Results.Count;
 
-                sb.AppendLine("Duplicate/s found");
+                sb.AppendLine($"{RawItemscount - rawmodel.Results.Count} Duplicate/s  found in db");
                 statusCode = 409;
             }
         }
 
 
-        if (model.Results.Count > 0)
+        if (rawmodel.Results.Count > 0)
             try
             {
-                await _pplCollection.InsertManyAsync(model.Results);
+
+                foreach (var item in rawmodel.Results)
+                {
+                    item.Name.First = item.Name.First.ToLower();
+                    item.Name.Last = item.Name.Last.ToLower();
+                    item.Location.State = item.Location.State.ToLower();
+                    item.Location.Country = item.Location.Country.ToLower();
+                    item.Email = item.Email.ToLower();
+                }
+
+                await _pplCollection.InsertManyAsync(rawmodel.Results);
 
                 if (statusCode == 409) 
                 {
                     sb.AppendLine("Duplicates filtered, the remaining records were inserted ");
-                    sb.AppendLine($"{Items} duplicate/s removed");
+                    sb.AppendLine($"{duplecoun} duplicate/s removed");
                 };
 
-                sb.AppendLine($"{model.Results.Count} item/s inserted" );
+                sb.AppendLine($"{rawmodel.Results.Count} item/s inserted" );
             }
             catch (Exception ex)
             {
@@ -212,7 +234,7 @@ public class Peopleservice : IPeopleservice
             }
         else 
         {
-            sb.AppendLine("Filtered out duplicates, no items added");
+            sb.AppendLine("Filtered all duplicates out, nothing to add");
         }
 
 

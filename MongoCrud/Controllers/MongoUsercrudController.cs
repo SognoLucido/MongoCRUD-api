@@ -242,7 +242,10 @@ public class MongoUsercrudController : ControllerBase
         {
             return BadRequest("POST too big");
         }
-       
+
+
+
+
 
         var (code,messg) = await dbcall.Insert(Value,dupecheck);
 

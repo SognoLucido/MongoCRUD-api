@@ -32,10 +32,8 @@ public class PersonDbModel
     public Name Name { get; set; }
     public Location Location { get; set; }
 
-    [JsonIgnore]
-    [BsonIgnore]
-    private string _email ;
-    public string Email { get => _email; set { _email = value.ToLower(); } }
+    private string _email;
+    public string Email { get=>_email; set=> _email = value.ToLower(); }
 
     public Login Login { get; set; }
     public Dob Dob { get; set; }
@@ -135,8 +133,8 @@ public class Name
 {
     public string? Title { get; set; }
     
-    public string? First { get; set; }
-    public string? Last { get; set; }
+    public string First { get; set; }
+    public string Last { get; set; }
 }
 
 public class Picture
