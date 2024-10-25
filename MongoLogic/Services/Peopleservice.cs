@@ -5,7 +5,7 @@
 
 using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
-
+using MongoCrudPeopleApi.Model;
 using Mongodb;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
@@ -17,6 +17,7 @@ using MongoLogic.model.Api;
 using System.Data;
 
 using System.Text;
+
 
 
 
@@ -43,49 +44,164 @@ public class Peopleservice : IPeopleservice
     }
 
 
-    public async Task TestLog()
+    //public async Task TestLog()
+    //{
+
+    //    try
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //    catch (Exception ex) 
+    //    {
+    //        log.LogError("This is an error log. {}",ex.Message);
+    //    }
+    //}
+
+
+    ///////////////////////////////// 
+
+
+
+    //public List<List<BsonRegularExpression>> BsonExpressionBuilder(BulkUserModel data)
+    //{
+
+    //   // var list = new List<List<BsonRegularExpression>?>();
+
+    //   // if (data.Firstname.Any())
+    //   // {
+
+    //   // }
+
+    //   //return list;
+    //}
+
+    
+
+
+
+    public async Task<List<PersonBaseModel>?> BulkSearchUsers(BulkUserModel userdata, Pagesize ps)
     {
+
+        List<PersonBaseModel>? data = [];
+
+        var filterBuilder = Builders<PersonDbModel>.Filter;
+        var filters = new List<FilterDefinition<PersonDbModel>>();
+
+     
+
+        if (userdata.Firstname.Any()) filters.Add(filterBuilder.Or(userdata.Firstname.Select(x=>Builders<PersonDbModel>.Filter.Regex(d => d.Name.First, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Lastname.Any()) filters.Add(filterBuilder.Or(userdata.Lastname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.Last, new BsonRegularExpression(x))).ToList()));
+
+
+        if (userdata.State.Any()) filters.Add(filterBuilder.Or(userdata.State.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.State, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Country.Any()) filters.Add(filterBuilder.Or(userdata.Country.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.Country, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Email.Any()) filters.Add(filterBuilder.In(x => x.Email, userdata.Email));
+        if (userdata.Uuid.Any()) filters.Add(filterBuilder.In(x => x.Login.Uuid , userdata.Uuid));
+        if (userdata.Age.Any()) filters.Add(filterBuilder.In(x => x.Dob.Age, userdata.Age));
+        if (userdata.PhoneNumber.Any()) filters.Add(filterBuilder.In(x => x.Cell, userdata.PhoneNumber));
+      
+
+        var filter = filterBuilder.And(filters);
+       
+
 
         try
         {
-            throw new NotImplementedException();
+
+
+            data = await _pplCollection
+                  .Find(filter)
+                  .Project(x => new PersonBaseModel
+                  {
+                      gender = x.Gender,
+                      Firstname = x.Name.First,
+                      Lastname = x.Name.Last,
+                      email = x.Email,
+                      age = x.Dob.Age,
+                      phone = x.Phone,
+
+                      Address = new Address
+                      (
+                          x.Location.Street.Name,
+                          x.Location.Street.Number,
+                          x.Location.City,
+                          x.Location.State,
+                          x.Location.Country
+                      )
+
+                  })
+                  .Limit((int)ps)
+                  .ToListAsync();
         }
-        catch (Exception ex) 
+        catch (MongoConnectionException ex)
         {
-            log.LogError("This is an error log. {}",ex.Message);
+            log.LogError("Database Connection error{}", ex.Message);
         }
-     
-       
-   
+        catch (Exception ex)
+        {
+            log.LogError("{}", ex.Message);
+        }
+
+
+        return data.Count == 0 ? null : data;
+
     }
 
 
 
-    ///////////////////////////////// 
-    public async Task<List<PersonDbModel>?> SearchUsers(Usersearch userdata)
+
+
+
+
+
+
+
+
+        public async Task<List<PersonBaseModel>?> SearchUsers(UsersModel userdata,Pagesize ps)
     {
-        List<PersonDbModel>? data = [];
+        List<PersonBaseModel>? data = [];
 
         var filterBuilder = Builders<PersonDbModel>.Filter;
         var filters = new List<FilterDefinition<PersonDbModel>>();
 
         if (userdata.Firstname is not null) filters.Add(filterBuilder.Regex(d =>d.Name.First, new BsonRegularExpression(userdata.Firstname)));
         if (userdata.Lastname is not null) filters.Add(filterBuilder.Regex(d => d.Name.Last, new BsonRegularExpression(userdata.Lastname)));
-        if (userdata.State is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.State)));
-        if (userdata.Country is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.Country)));
-        if (userdata.Email is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.Email)));
+        if (userdata.State is not null) filters.Add(filterBuilder.Regex(d => d.Location.State, new BsonRegularExpression(userdata.State)));
+        if (userdata.Country is not null) filters.Add(filterBuilder.Regex(d => d.Location.Country, new BsonRegularExpression(userdata.Country)));
+        if (userdata.Email is not null) filters.Add(filterBuilder.Regex(d => d.Email, new BsonRegularExpression(userdata.Email)));
         if (userdata.Uuid is not null) filters.Add(filterBuilder.Eq(d => d.Login.Uuid,userdata.Uuid));
         if (userdata.Age is not null) filters.Add(filterBuilder.Eq(d => d.Dob.Age, (int)userdata.Age));
-        if (userdata.PhoneNumber is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.PhoneNumber)));
+        if (userdata.PhoneNumber is not null) filters.Add(filterBuilder.Regex(d => d.Phone, new BsonRegularExpression(userdata.PhoneNumber)));
 
 
         var filter = filterBuilder.And(filters);
 
         try
         {
-            data = await _pplCollection
+
+
+          data = await _pplCollection
                 .Find(filter)
-                .Limit(100)
+                .Project(x => new PersonBaseModel
+                {
+                    gender = x.Gender,
+                    Firstname = x.Name.First,
+                    Lastname = x.Name.Last,
+                    email = x.Email,
+                    age = x.Dob.Age,
+                    phone = x.Phone,
+
+                    Address = new Address
+                    (
+                        x.Location.Street.Name,
+                        x.Location.Street.Number,
+                        x.Location.City,
+                        x.Location.State,
+                        x.Location.Country
+                    )
+                    
+                })
+                .Limit((int)ps)
                 .ToListAsync();
         }
         catch (MongoConnectionException ex)
@@ -94,7 +210,7 @@ public class Peopleservice : IPeopleservice
         }
         catch (Exception ex)
         {
-
+            log.LogError("{}", ex.Message);
         }
       
 
@@ -108,10 +224,10 @@ public class Peopleservice : IPeopleservice
 
 
 
-    public async Task<List<PersonDbModel>?> GetAgerangeUserItem(int minage, int maxage)
+    public async Task<List<PersonBaseModel>?> GetAgerangeUserItem(int minage, int maxage)
     {
 
-        List<PersonDbModel>? data = new();
+        List<PersonBaseModel>? data = [];
 
         var filter = Builders<PersonDbModel>.Filter.Gte(p => p.Dob.Age, minage) &
                 Builders<PersonDbModel>.Filter.Lte(p => p.Dob.Age, maxage);
@@ -119,7 +235,27 @@ public class Peopleservice : IPeopleservice
 
         try
         {
-            data = await _pplCollection.Find(filter).ToListAsync();
+            data = await _pplCollection.Find(filter)
+                .Project(x => new PersonBaseModel
+                {
+                    gender = x.Gender,
+                    Firstname = x.Name.First,
+                    Lastname = x.Name.Last,
+                    email = x.Email,
+                    age = x.Dob.Age,
+                    phone = x.Phone,
+
+                    Address = new Address
+                    (
+                        x.Location.Street.Name,
+                        x.Location.Street.Number,
+                        x.Location.City,
+                        x.Location.State,
+                        x.Location.Country
+                    )
+
+                })
+                .ToListAsync();
         }
         catch (MongoConnectionException ex)
         {
@@ -129,6 +265,8 @@ public class Peopleservice : IPeopleservice
        return data.Count == 0 ? null : data;
       
     }
+
+
 
     public Task<List<PersonDbModel>?> FindbyCustomQuary(FindsingleModel data)
     {
@@ -167,6 +305,9 @@ public class Peopleservice : IPeopleservice
 
 
         sb.AppendLine("Total items : " + RawItemscount);
+
+
+
         rawmodel.Results = rawmodel.Results.DistinctBy(z => z.Email).ToList();
 
         if (RawItemscount != rawmodel.Results.Count)
@@ -211,7 +352,7 @@ public class Peopleservice : IPeopleservice
                     item.Name.Last = item.Name.Last.ToLower();
                     item.Location.State = item.Location.State.ToLower();
                     item.Location.Country = item.Location.Country.ToLower();
-                    item.Email = item.Email.ToLower();
+
                 }
 
                 await _pplCollection.InsertManyAsync(rawmodel.Results);

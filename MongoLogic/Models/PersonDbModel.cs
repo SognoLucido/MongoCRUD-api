@@ -48,7 +48,7 @@ public class PersonDbModel
 public class Dob
 {
     public DateTimeOffset Date { get; set; }
-    public long Age { get; set; }
+    public int Age { get; set; }
 }
 
 public class Id
@@ -108,7 +108,7 @@ public class Coordinates
 
 public class Street
 {
-    public long Number { get; set; }
+    public int Number { get; set; }
     public string Name { get; set; }
 }
 
