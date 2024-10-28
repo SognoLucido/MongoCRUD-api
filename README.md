@@ -1,8 +1,3 @@
-## TODO
-I'm rewriting this mess – in progress
-- [ ] Optimize queries
-- [ ] Unit/Integ testing
-- [ ] Docker implementation
 
 # MongoCrud
 CRUD api Based on randomuser.me/api model
@@ -15,8 +10,13 @@ CRUD api Based on randomuser.me/api model
 
 The POST endpoint has duplicate protection before inserting data into the db
 
+## TODO
+I'm rewriting this mess – in progress
+- [x] Optimize queries
+- [ ] Unit/Integ testing
+- [x] Docker implementation
 
-![Screenshot 2024-05-09 123930](https://github.com/SognoLucido/MongoCRUD-api/assets/123832236/7a0b9ca9-1a7d-4e54-a69c-9992dfc20657)
+
 
 # Live Demo
 soon
