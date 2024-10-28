@@ -14,7 +14,9 @@ namespace Mongodb.Models.Dto
         public Address Address { get; set; }    
         public string email { get; set; }
         public int age { get; set; }
-        public string phone { get; set; }
+        public string cell { get; set; }
+
+        public Guid? userid { get; set; }
 
     }
 

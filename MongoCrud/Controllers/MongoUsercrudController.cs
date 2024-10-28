@@ -6,6 +6,7 @@ using Mongodb.Models.Dto;
 using MongoDB.Bson;
 using MongoLogic.CRUD;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 
 
@@ -45,39 +46,31 @@ public class MongoUsercrudController : ControllerBase
     /// <param name="Pagesize"> default = 100 items </param>
     /// <returns></returns>
     [HttpGet("search")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))] 
-    public async Task<IActionResult> Getusersearch([FromQuery]UsersModel search, [FromQuery] Pagesize Pagesize = Pagesize.i100)
-    {
-        var data = await dbcall.SearchUsers(search,Pagesize);
-
-        return data is null ? NotFound(): Ok(data);
-    }
-
-
-    [HttpPost("bulk-search")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))]
-    public async Task<IActionResult> Bulksearch(BulkUserModel search, [FromQuery] Pagesize Pagesize = Pagesize.i100)
+    public async Task<IActionResult> Getusersearch([FromQuery] UsersModel search, [FromQuery] Pagesize Pagesize = Pagesize.i100)
     {
-
-        var data = await dbcall.BulkSearchUsers(search, Pagesize);
+        var data = await dbcall.SearchUsers(search, Pagesize);
 
         return data is null ? NotFound() : Ok(data);
     }
 
 
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        ///Swagger can't handle the load, so the result of this endpoint will be truncated       
-        ///If you want to check the real limits, make a GET request directly in the browser or with Postman, etc.        
-        /// like : /api/user/byage-nolimit?minage=1&amp;maxage=100      
-        /// </remarks>
-        /// <returns></returns>
-        [HttpGet("byage-limit")]
+
+
+
+    /// <summary>
+    /// </summary>
+    /// <remarks>
+    ///Swagger can't handle the load, so the result of this endpoint will be truncated       
+    ///If you want to check the real limits, make a GET request directly in the browser or with Postman, etc.        
+    /// like : /api/user/byage-nolimit?minage=1&amp;maxage=100      
+    /// </remarks>
+    /// <returns></returns>
+    [HttpGet("byage-limit")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))]
     public async Task<IActionResult> GetbyAgeRange(
-        [FromQuery][Required][Range(0, 150)] int minage,
-        [FromQuery][Required][Range(0, 150)] int maxage) // add page with nitems hardcoded 
+    [FromQuery][Required][Range(0, 150)] int minage,
+    [FromQuery][Required][Range(0, 150)] int maxage) // add page with nitems hardcoded 
     {
 
         if (minage > maxage) return BadRequest("minAge > maxAge");
@@ -127,120 +120,51 @@ public class MongoUsercrudController : ControllerBase
 
 
     }
-
-
-
-
-
-
-
-
-    //[HttpGet]
-    //public async Task<IActionResult> GetOne([FromRoute]MongoId Mongo_Id1)
-    //{
-    //    var data = await dbcall.Findby_id(Mongo_Id1.MongoObject_Id);
-
-    //    if (data.Item2 == 200 && data.Item1 is not null)
-    //    {
-    //        return Ok(data.Item1);
-    //    }
-    //    else if (data.Item1 is null)
-    //    {
-    //        return NotFound();
-    //    }
-    //    else
-    //    {
-    //        return StatusCode(500, "server error");
-    //    }
-
-
-
-    //}
-
-
-
-    //[HttpGet]
-    //public async Task<IActionResult> GetFromQuerypara([FromQuery] FindsingleModel findbyone)
-    //{
-
-    //    if (ModelState.IsValid)
-    //    {
-    //        if (findbyone.Name is null && findbyone.LastName is null && findbyone.LoginUuid is null)
-    //        {
-    //            return BadRequest("At least one parameter is required");
-    //        }
-
-
-    //        //if((findbyone.Name is null || findbyone.LastName is null) && findbyone.LoginId is null)
-    //        //{
-    //        //    return BadRequest("First name and Last Name Both required");
-    //        //}
-
-    //    }
-
-
-    //    var datafromdb = await dbcall.FindbyCustomQuary(findbyone);
-
-
-    //    if (datafromdb is null)
-    //    {
-    //        return StatusCode(500, "server error");
-    //    }
-    //    if (datafromdb.Count == 0)
-    //    {
-    //        return StatusCode(404, "record Notfound");
-    //    }
-    //    else
-    //    {
-    //        return Ok(datafromdb);
-    //    }
-
-
-    //}
-
-
-    ////Task<long?> GetTotalItems()
-    //[HttpGet("totalitems")]
-    //public async Task<IActionResult> GetCountitems()
-    //{
-       
-    //    long? count = await dbcall.GetTotalItems();
-
-
-    //    if (count is null)
-    //    {
-    //        return StatusCode(500, "An internal server error occurred");
-    //    }
-    //    else return Ok(count);
-
-
-    //}
-
     
-    //[HttpGet("{Randomppl}")]
-    //public async Task<IActionResult> GetrandomPerson([Range(1,50)]int Randomppl)
-    //{
+
+    [HttpPatch]
+    public async Task<IActionResult> PatchUserItem([FromQuery] PatchUserItemModel request, [FromBody][Required] UserItemPatchModel patchdata)
+    {
+
+        if (request.userid is null && request.email is null) return BadRequest();
 
 
-    //  List<PersonDbModel>? result =  await dbcall.GetXitems(Randomppl);
+        var statuscode = await dbcall.PatchUseritem(request, patchdata);
 
-    //    if (result is null)
-    //    {
-    //        return StatusCode(500, "An internal server error occurred");
-    //    }
-    //    else return Ok(result);
+
+        return StatusCode(statuscode);
 
 
 
-    //}
+    }
 
+
+    [HttpPost("bulk-search")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))]
+    public async Task<IActionResult> Bulksearch(BulkUserModel search, [FromQuery] Pagesize Pagesize = Pagesize.i100)
+    {
+
+        var data = await dbcall.BulkSearchUsers(search, Pagesize);
+
+        return data is null ? NotFound() : Ok(data);
+    }
+
+
+
+  
+
+
+
+
+
+   
     /// <summary>
-    ///  insert User data 1:1 from https://randomuser.me/api?results=3 , copy and paste in the post here
+    ///  insert User data 1:1 from https://randomuser.me/api?results=3 , copy and paste in the post here . database is empty by default
     /// </summary>
     /// <param name="dupecheck"> check duplicates before insert in the database (true,false) , This does not remove existing records in the database</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> PostUserItemModel([FromBody][Required] PersonApiModel Value,bool dupecheck = true)
+    public async Task<IActionResult> PostUserItemModel([FromBody][Required] PersonApiModel Value, bool dupecheck = true)
     {
 
         if (Value.Results.Count == 0) return BadRequest();
@@ -250,10 +174,10 @@ public class MongoUsercrudController : ControllerBase
         }
 
 
-        var (code,messg) = await dbcall.Insert(Value,dupecheck);
+        var (code, messg) = await dbcall.Insert(Value, dupecheck);
 
 
-        return StatusCode(code,messg);
+        return StatusCode(code, messg);
     }
 
 
@@ -261,93 +185,36 @@ public class MongoUsercrudController : ControllerBase
 
 
 
+    /// <summary>
+    /// deleteby uuid or email  --> uuid : guid , email : string
+    /// </summary>
+    /// <param name="uuid_email"></param>
+    /// <returns></returns>
+    [HttpDelete("{uuid_email}")]
+    public async Task<IActionResult> Delete(string uuid_email )
+    {
+        bool status ;
 
+        if (Guid.TryParse(uuid_email, out var uuid))
+        {
+            status = await dbcall.RemovebyUuidAsync(uuid);
+        }
+        else if (Regex.IsMatch(uuid_email, emailregex))
+        {
+            status = await dbcall.RemovebyEmailAsync(uuid_email);
+        }
+        else return BadRequest();
 
-        //[HttpPatch("{Mongo_Id}")]
-        //public async Task<IActionResult> Patch(MongoId Mongo_Id, [FromBody] PutPersonmodel model  )
-        //{
-
-
-
-        //    short result = await dbcall.UpdateAsync(Mongo_Id.MongoObject_Id, model);
-
-        //    if (result == 200)
-        //    {
-        //        return Ok("Successfully updated");
-        //    }
-        //    else if (result == 400)
-        //    {
-        //        return BadRequest("No changes detected.");
-        //    }
-        //    else if (result == 404)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Server on fire");
-        //    }
-
-        //}
-
-
-
-        //[HttpPut("{Mongo_Id}")]
-        //public async Task<IActionResult> Put(MongoId Mongo_Id, [FromBody] PersonApiModel model)
-        //{
-
-        //    if (model.Results.Count != 1)
-        //    {
-        //        return BadRequest("1 PUT record at time");
-        //    }
-
-
-
-        //    short result = await dbcall.PutAsyncFullModel(Mongo_Id.MongoObject_Id, model);
-
-
-
-        //    if (result == 200)
-        //    {
-        //        return Ok("Successfully updated");
-        //    }
-        //    else if (result == 400)
-        //    {
-        //        return BadRequest("No changes detected.");
-        //    }
-        //    else if (result == 404)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "An internal server error occurred");
-        //    }
-
-        //}
-
-
-
-
-        //[HttpDelete("{Mongo_Id}")]
-        //public async Task<IActionResult> Delete(MongoId Mongo_Id)
-        //{
-        //    byte result = await dbcall.RemoveAsync(Mongo_Id.MongoObject_Id);
-
-        //    if (result > 0)
-        //    {
-        //        return Ok();
-        //    }
-
-        //    return StatusCode(404, "record Notfound");
-
-
-        //}
-
-
-
-
-
+        
+       return status ? Ok() : BadRequest();
 
 
     }
+
+    string emailregex = @"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$";
+
+
+
+
+
+}

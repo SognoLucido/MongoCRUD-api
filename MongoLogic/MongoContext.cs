@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
 
 namespace Mongodb;
@@ -21,6 +22,7 @@ public class MongoContext
 
     public MongoContext(string conn)
     {
+       
         Peopledb =  new MongoClient(conn).GetDatabase(Database.Peopledb.ToString());
     }
 

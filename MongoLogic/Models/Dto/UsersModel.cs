@@ -1,4 +1,6 @@
 ﻿
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 using System.ComponentModel.DataAnnotations;
 
 
@@ -20,6 +22,7 @@ namespace Mongodb.Models.Dto
 
         public string? Email { get; set; }
 
+        //[BsonGuidRepresentation(GuidRepresentation.Standard)]
         public Guid? Uuid { get; set; }
 
         public int? Age { get; set; }

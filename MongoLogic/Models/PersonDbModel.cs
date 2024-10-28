@@ -120,6 +120,7 @@ public class Timezone
 
 public partial class Login
 {
+    //[BsonGuidRepresentation(GuidRepresentation.Standard)]
     public Guid Uuid { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }

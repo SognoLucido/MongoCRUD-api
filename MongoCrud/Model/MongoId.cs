@@ -7,11 +7,6 @@ namespace MongoCrudPeopleApi.Apimodels;
 
 
 
-
-
-
-
-
 public class MongoId
 {
 
