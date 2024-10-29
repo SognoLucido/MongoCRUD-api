@@ -121,21 +121,21 @@ public class Peopleservice : IPeopleservice
         var filterBuilder = Builders<PersonDbModel>.Filter;
         var filters = new List<FilterDefinition<PersonDbModel>>();
 
+    
+
+        if (userdata.Firstname?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.Firstname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.First, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Lastname?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.Lastname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.Last, new BsonRegularExpression(x))).ToList()));
 
 
-        if (userdata.Firstname.Any()) filters.Add(filterBuilder.Or(userdata.Firstname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.First, new BsonRegularExpression(x))).ToList()));
-        if (userdata.Lastname.Any()) filters.Add(filterBuilder.Or(userdata.Lastname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.Last, new BsonRegularExpression(x))).ToList()));
+        if (userdata.State?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.State.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.State, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Country?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.Country.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.Country, new BsonRegularExpression(x))).ToList()));
+        if (userdata.Email?.Any() ?? false) filters.Add(filterBuilder.In(x => x.Email, userdata.Email));
+        if (userdata.Uuid?.Any() ?? false) filters.Add(filterBuilder.In(x => x.Login.Uuid, userdata.Uuid));
+        if (userdata.Age?.Any() ?? false) filters.Add(filterBuilder.In(x => x.Dob.Age, userdata.Age));
+        if (userdata.PhoneNumber?.Any() ?? false) filters.Add(filterBuilder.In(x => x.Cell, userdata.PhoneNumber));
 
 
-        if (userdata.State.Any()) filters.Add(filterBuilder.Or(userdata.State.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.State, new BsonRegularExpression(x))).ToList()));
-        if (userdata.Country.Any()) filters.Add(filterBuilder.Or(userdata.Country.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Location.Country, new BsonRegularExpression(x))).ToList()));
-        if (userdata.Email.Any()) filters.Add(filterBuilder.In(x => x.Email, userdata.Email));
-        if (userdata.Uuid.Any()) filters.Add(filterBuilder.In(x => x.Login.Uuid, userdata.Uuid));
-        if (userdata.Age.Any()) filters.Add(filterBuilder.In(x => x.Dob.Age, userdata.Age));
-        if (userdata.PhoneNumber.Any()) filters.Add(filterBuilder.In(x => x.Cell, userdata.PhoneNumber));
-
-
-        var filter = filterBuilder.And(filters);
+        var filter = filterBuilder.Or(filters);
 
 
 

@@ -1,5 +1,10 @@
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MongoCrudPeopleApi.Auth;
+
 using Mongodb;
 using MongoLogic.Crud;
 using MongoLogic.CRUD;
@@ -12,6 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+
+builder.Services.AddAuthentication("ApiKey")
+.AddScheme<ApiOptions, ApiKeyAuthenticationHandler>("ApiKey", options => { });
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
@@ -41,15 +51,8 @@ builder.Services.AddSwaggerGen(opt =>
 });
 
 var connectionString = builder.Configuration["INIT_VAR"];
-
-builder.Services.AddSingleton<MongoContext>(_ => new (connectionString));
-//builder.Services.AddSingleton(new MongoContext(connectionString));
-
-//builder.Services.Configure<MongoSettings>(builder.Configuration.GetValue<string>("INIT_VAR");
-
-builder.Services.AddScoped<IPeopleservice,Peopleservice>();
-//builder.Services.AddSingleton<IManualmapper,Manualmapper>();
-
+builder.Services.AddSingleton<MongoContext>(_ => new(connectionString));
+builder.Services.AddScoped<IPeopleservice, Peopleservice>();
 
 
 var app = builder.Build();
@@ -60,7 +63,7 @@ app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
 
-app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

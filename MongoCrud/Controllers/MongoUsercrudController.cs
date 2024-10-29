@@ -3,24 +3,10 @@ using MongoCrudPeopleApi.Model;
 using Mongodb;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
-using MongoDB.Bson;
 using MongoLogic.CRUD;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
-
-
-
 namespace MongoCrudPeopleApi.Controllers;
-
-
-
-public class User
-{
-    public ObjectId Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-}
-
 
 
 [Route("api/user")]
@@ -120,14 +106,19 @@ public class MongoUsercrudController : ControllerBase
 
 
     }
-    
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"> userid OR email </param>
+    /// <param name="patchdata"> Optional parameters; at least one is required </param>
+    /// <returns></returns>
     [HttpPatch]
     public async Task<IActionResult> PatchUserItem([FromQuery] PatchUserItemModel request, [FromBody][Required] UserItemPatchModel patchdata)
     {
 
         if (request.userid is null && request.email is null) return BadRequest();
-
+        if (request.userid is not null && request.email is not null) return BadRequest("choose one ");
 
         var statuscode = await dbcall.PatchUseritem(request, patchdata);
 
@@ -139,6 +130,15 @@ public class MongoUsercrudController : ControllerBase
     }
 
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// likethis : { "firstname": [ "marice", "mario" ], "lastname": [ "mortensen", "fortin" ] ,"age": [40,41,42,43]}
+    /// </remarks>
+    /// <param name="Pagesize">default = 100</param>
+    /// <returns></returns>
     [HttpPost("bulk-search")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))]
     public async Task<IActionResult> Bulksearch(BulkUserModel search, [FromQuery] Pagesize Pagesize = Pagesize.i100)
@@ -151,13 +151,13 @@ public class MongoUsercrudController : ControllerBase
 
 
 
-  
 
 
 
 
 
-   
+
+
     /// <summary>
     ///  insert User data 1:1 from https://randomuser.me/api?results=3 , copy and paste in the post here . database is empty by default
     /// </summary>
@@ -191,9 +191,9 @@ public class MongoUsercrudController : ControllerBase
     /// <param name="uuid_email"></param>
     /// <returns></returns>
     [HttpDelete("{uuid_email}")]
-    public async Task<IActionResult> Delete(string uuid_email )
+    public async Task<IActionResult> Delete(string uuid_email)
     {
-        bool status ;
+        bool status;
 
         if (Guid.TryParse(uuid_email, out var uuid))
         {
@@ -205,8 +205,8 @@ public class MongoUsercrudController : ControllerBase
         }
         else return BadRequest();
 
-        
-       return status ? Ok() : BadRequest();
+
+        return status ? Ok() : BadRequest();
 
 
     }
