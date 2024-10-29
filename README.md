@@ -1,6 +1,6 @@
 
 # MongoCrud
-CRUD api Based on randomuser.me/api model.
+CRUD api Based on randomuser.me/api model.   
 database is empty by default.
 
 > [!NOTE]
@@ -12,7 +12,7 @@ database is empty by default.
 The POST endpoint includes duplicate protection before inserting data into the database
 
 ## TODO
-I'm rewriting this mess – in progress
+
 - [x] Optimize queries
 - [ ] Logging to a file and retrieving log information using apikey
 - [ ] Unit/Integ testing
