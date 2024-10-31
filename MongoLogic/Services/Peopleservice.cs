@@ -14,13 +14,14 @@ using MongoDB.Driver;
 using MongoLogic.CRUD;
 using System.Data;
 using System.Text;
+using ZstdSharp;
 
 
 
 
 
 
-namespace MongoLogic.Crud;
+namespace Mongodb.Services;
 
 
 
@@ -42,18 +43,47 @@ public class Peopleservice : IPeopleservice
     }
 
 
-    //public async Task TestLog()
-    //{
 
-    //    try
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //    catch (Exception ex) 
-    //    {
-    //        log.LogError("This is an error log. {}",ex.Message);
-    //    }
-    //}
+    public async Task TestLogv2()
+    {
+        var test = Directory.GetCurrentDirectory();
+
+        var ok = Path.Combine(test, "Logs/log.txt");
+
+        var testx = Path.Exists(ok);
+
+        using (FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read))
+        using (StreamReader reader = new StreamReader(fileStream))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                Console.WriteLine(line);
+            }
+        }
+
+
+
+    }
+
+
+    public async Task TestLog()
+    {
+
+        //try
+        //{
+        //    throw new NotImplementedException();
+        //}
+        //catch (Exception ex)
+        //{
+
+
+        log.LogError("This is an error log. {}", "ezzzzzzzzz");
+        log.LogWarning("moneez");
+        log.LogInformation("mudwad");
+        log.LogDebug("lazzzzzzzzz");
+        //}
+    }
 
 
     ///////////////////////////////// 
@@ -121,7 +151,7 @@ public class Peopleservice : IPeopleservice
         var filterBuilder = Builders<PersonDbModel>.Filter;
         var filters = new List<FilterDefinition<PersonDbModel>>();
 
-    
+
 
         if (userdata.Firstname?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.Firstname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.First, new BsonRegularExpression(x))).ToList()));
         if (userdata.Lastname?.Any() ?? false) filters.Add(filterBuilder.Or(userdata.Lastname.Select(x => Builders<PersonDbModel>.Filter.Regex(d => d.Name.Last, new BsonRegularExpression(x))).ToList()));
@@ -397,7 +427,22 @@ public class Peopleservice : IPeopleservice
 
 
 
+    public async Task<bool> RemoveItem<T>(T item)
+    {
 
+        DeleteResult? result = null;
+
+        if (item is Guid uuid)
+        {
+            result = await _pplCollection.DeleteOneAsync(x => x.Login.Uuid == uuid);
+        }
+        else if (item is string email)
+        {
+            result = await _pplCollection.DeleteOneAsync(x => x.Email == email);
+        }
+
+        return result?.DeletedCount > 0;
+    }
 
 
 
@@ -407,8 +452,8 @@ public class Peopleservice : IPeopleservice
     {
         var x = await _pplCollection.DeleteOneAsync(x => x.Login.Uuid == id);
 
-        return x.DeletedCount > 0;
 
+        return x.DeletedCount > 0;
     }
 
 

@@ -14,10 +14,11 @@ namespace MongoLogic.CRUD
         Task<List<PersonBaseModel>?> SearchUsers(UsersModel userdata,Pagesize pagesize);
         Task<List<PersonBaseModel>?> GetAgerangeUserItem(int minage, int maxage);
         Task<(int, string?)> Insert(PersonApiModel model, bool duplicatecheck);
-  
-        Task<bool> RemovebyEmailAsync(string email);
-        Task<bool> RemovebyUuidAsync(Guid id);
+        Task<bool> RemoveItem<T>(T item);
 
+        Task TestLog();
+
+        Task TestLogv2();
 
     }
 }

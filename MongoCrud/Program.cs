@@ -1,13 +1,16 @@
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
+
+using Logger;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoCrudPeopleApi.Auth;
 
 using Mongodb;
-using MongoLogic.Crud;
+using Mongodb.Services;
 using MongoLogic.CRUD;
+using Serilog;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -15,11 +18,26 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
 
 
-builder.Services.AddAuthentication("ApiKey")
+builder.Services.AddSerilog(opt =>
+{
+    var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile(path: "appsettings.json", optional: false)
+    .Build();
+
+    opt.ReadFrom.Configuration(configuration);
+
+
+});
+
+//Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
+
+
+//builder.Services.LoggerInit();
+
+builder.Services.AddAuthentication()
 .AddScheme<ApiOptions, ApiKeyAuthenticationHandler>("ApiKey", options => { });
 
 
@@ -28,6 +46,7 @@ builder.Services.AddControllers()
 {
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 }); ;
+
 
 //builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>

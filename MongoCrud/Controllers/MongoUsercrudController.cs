@@ -1,28 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoCrudPeopleApi.Model;
 using Mongodb;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
 using MongoLogic.CRUD;
+using Serilog.Core;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 namespace MongoCrudPeopleApi.Controllers;
 
 
 [Route("api/user")]
+[Tags("User")]
 [ApiController]
-public class MongoUsercrudController : ControllerBase
+public class MongoUsercrudController(IPeopleservice peopleservice) : ControllerBase
 {
 
 
-    private readonly IPeopleservice dbcall;
-
-
-    public MongoUsercrudController(IPeopleservice peopleservice, MongoContext context)
-    {
-        dbcall = peopleservice;
-
-    }
+    private readonly IPeopleservice dbcall = peopleservice;
 
 
 
@@ -37,7 +33,14 @@ public class MongoUsercrudController : ControllerBase
     {
         var data = await dbcall.SearchUsers(search, Pagesize);
 
+
+       
+
+
         return data is null ? NotFound() : Ok(data);
+
+
+        
     }
 
 
@@ -47,12 +50,13 @@ public class MongoUsercrudController : ControllerBase
     /// <summary>
     /// </summary>
     /// <remarks>
-    ///Swagger can't handle the load, so the result of this endpoint will be truncated       
+    ///Swagger can't handle the load (+1000 return items), so the result of this endpoint will be truncated       
     ///If you want to check the real limits, make a GET request directly in the browser or with Postman, etc.        
     /// like : /api/user/byage-nolimit?minage=1&amp;maxage=100      
     /// </remarks>
     /// <returns></returns>
     [HttpGet("byage-limit")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<PersonBaseModel>))]
     public async Task<IActionResult> GetbyAgeRange(
     [FromQuery][Required][Range(0, 150)] int minage,
@@ -85,7 +89,7 @@ public class MongoUsercrudController : ControllerBase
 
 
 
-    //---------------------- LOG ENDPOINT = READFILE AND FILTER IT BY ENDPOINT/QUERY/ERR-WARNING-info/ LIMIT last 5 last 20 
+
 
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -110,7 +114,9 @@ public class MongoUsercrudController : ControllerBase
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="request"> userid OR email </param>
+    /// <remarks>
+    /// userid(uuid) OR email
+    /// </remarks>
     /// <param name="patchdata"> Optional parameters; at least one is required </param>
     /// <returns></returns>
     [HttpPatch]
@@ -197,24 +203,24 @@ public class MongoUsercrudController : ControllerBase
 
         if (Guid.TryParse(uuid_email, out var uuid))
         {
-            status = await dbcall.RemovebyUuidAsync(uuid);
+            status = await dbcall.RemoveItem(uuid);
         }
         else if (Regex.IsMatch(uuid_email, emailregex))
         {
-            status = await dbcall.RemovebyEmailAsync(uuid_email);
+            status = await dbcall.RemoveItem(uuid_email);
         }
         else return BadRequest();
 
 
-        return status ? Ok() : BadRequest();
+        return status ? Ok() : NotFound();
 
 
     }
 
-    string emailregex = @"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$";
+   const string emailregex = @"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$";
 
 
 
-
+   
 
 }

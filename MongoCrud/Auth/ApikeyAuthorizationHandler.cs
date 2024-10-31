@@ -8,7 +8,7 @@ namespace MongoCrudPeopleApi.Auth
 {
 
 
-    public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiOptions>
+    public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiOptions>  
     {
         private const string ApiKeyHeaderName = "x-api-key";
         private const string ApiKeyValue = "secretkey";
@@ -24,11 +24,6 @@ namespace MongoCrudPeopleApi.Auth
            // log = logger.CreateLogger<ApiKeyAuthenticationHandler>();
         }
 
-
-
-
-
-  
 
         protected override  Task HandleChallengeAsync(AuthenticationProperties properties)
         {
