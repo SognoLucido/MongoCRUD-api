@@ -33,10 +33,6 @@ public class MongoUsercrudController(IPeopleservice peopleservice) : ControllerB
     {
         var data = await dbcall.SearchUsers(search, Pagesize);
 
-
-       
-
-
         return data is null ? NotFound() : Ok(data);
 
 

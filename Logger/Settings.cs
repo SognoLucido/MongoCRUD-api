@@ -7,30 +7,22 @@ namespace Logger
     public static class Settings
     {
 
+        public static void Logger(this IServiceCollection builder)
+        {
 
 
-        //public static void  LoggerInit(this IServiceCollection builder)
-        //{
+            builder.AddSerilog(opt =>
+            {
+                var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(path: "appsettings.json", optional: false)
+                .Build();
+
+                opt.ReadFrom.Configuration(configuration);
 
 
-        //    var configuration = new ConfigurationBuilder()
-        //   .SetBasePath(Directory.GetCurrentDirectory())
-        //   .AddJsonFile("appsettings.json")
-        //   .Build();
+            });
 
-        //    var logger = new LoggerConfiguration()
-        //  .ReadFrom.Configuration(configuration)
-        //  .CreateLogger();
-
-        //    builder.AddLogging(opt =>
-        //    {
-        //        opt.AddSerilog();
-        //    });
-        //    //builder.AddSerilog();
-
-        //    logger.Information("Hello, world!");
-        //    logger.Warning("wtfwaring");
-          
-        //}
+        }
     }
 }

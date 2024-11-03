@@ -1,16 +1,9 @@
-
-
 using Logger;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoCrudPeopleApi.Auth;
-
 using Mongodb;
 using Mongodb.Services;
 using MongoLogic.CRUD;
-using Serilog;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -19,23 +12,10 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-builder.Services.AddSerilog(opt =>
-{
-    var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile(path: "appsettings.json", optional: false)
-    .Build();
-
-    opt.ReadFrom.Configuration(configuration);
-
-
-});
-
 //Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
 
 
-//builder.Services.LoggerInit();
+builder.Services.Logger();
 
 builder.Services.AddAuthentication()
 .AddScheme<ApiOptions, ApiKeyAuthenticationHandler>("ApiKey", options => { });
@@ -72,7 +52,7 @@ builder.Services.AddSwaggerGen(opt =>
 var connectionString = builder.Configuration["INIT_VAR"];
 builder.Services.AddSingleton<MongoContext>(_ => new(connectionString));
 builder.Services.AddScoped<IPeopleservice, Peopleservice>();
-
+builder.Services.AddScoped<LogService>();
 
 var app = builder.Build();
 

@@ -6,7 +6,6 @@
 using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
 using MongoCrudPeopleApi.Model;
-using Mongodb;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
 using MongoDB.Bson;
@@ -14,7 +13,7 @@ using MongoDB.Driver;
 using MongoLogic.CRUD;
 using System.Data;
 using System.Text;
-using ZstdSharp;
+
 
 
 
@@ -44,46 +43,6 @@ public class Peopleservice : IPeopleservice
 
 
 
-    public async Task TestLogv2()
-    {
-        var test = Directory.GetCurrentDirectory();
-
-        var ok = Path.Combine(test, "Logs/log.txt");
-
-        var testx = Path.Exists(ok);
-
-        using (FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read))
-        using (StreamReader reader = new StreamReader(fileStream))
-        {
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                Console.WriteLine(line);
-            }
-        }
-
-
-
-    }
-
-
-    public async Task TestLog()
-    {
-
-        //try
-        //{
-        //    throw new NotImplementedException();
-        //}
-        //catch (Exception ex)
-        //{
-
-
-        log.LogError("This is an error log. {}", "ezzzzzzzzz");
-        log.LogWarning("moneez");
-        log.LogInformation("mudwad");
-        log.LogDebug("lazzzzzzzzz");
-        //}
-    }
 
 
     ///////////////////////////////// 

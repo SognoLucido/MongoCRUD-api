@@ -1,37 +1,55 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Logger;
 using Microsoft.AspNetCore.Mvc;
-using Mongodb;
-using MongoLogic.CRUD;
-using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace MongoCrudPeopleApi.Controllers
 {
     [Route("logs")]
     [Tags("z-Logs")]
     [ApiController]
-    public class LogsController(IPeopleservice peopleservice) : Controller
+    public class LogsController(LogService logservice) : Controller
     {
 
+        private readonly LogService  logdata = logservice;
 
-        private readonly IPeopleservice dbcall = peopleservice;
-
-        [HttpGet]
-        public async Task<IActionResult> Todo()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="body"> max lenght 20 : message - string </param>
+        /// <param name="ex">enabling this will throw an exception</param>
+        /// <returns></returns>
+        [HttpPost]  
+        public async Task<IActionResult> Writetologger([FromBody][MaxLength(50)]string? body , LogLevelError level , [FromQuery(Name = "throw-exception")] bool ex = false)
         {
 
-            await dbcall.TestLog();
+
+            await logdata.WriteLog(body,level,ex);
 
             return Ok();
         }
 
-
+        /// <summary>
+        /// retrieve logs based on filter criteria
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="start"></param>
+        /// <param name="end">optional</param>
+        /// <returns></returns>
         [HttpGet("readfile")]
-        public async Task<IActionResult> Readfilestest()
+        public async Task<IActionResult> Readfile(DateTime start/*, DateTime? end*/)
         {
 
-            await dbcall.TestLogv2();
 
-            return Ok();
+
+
+            var data = await logdata.ReadLog(start);
+
+            return Ok(data);
+
+            //return Ok(start);
         }
 
     }
