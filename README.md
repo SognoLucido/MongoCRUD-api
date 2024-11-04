@@ -1,6 +1,22 @@
 
 # MongoCrud
-CRUD api Based on randomuser.me/api model
+CRUD api Based on randomuser.me/api model    
+in progress
+
+
+**Tools and Technologies** :
+- ASP.NET Core Web API
+- .net8
+- serilog(appsettings base config) console & file
+- Mvc Controllers
+- Minimal api (todo)
+- apikey auth (todo)
+- xunit (todo)
+- Testcontainers (todo)
+- SwaggerUI
+- docker / compose
+- Mongodb
+- MongoDB.Driver
 
 > [!NOTE]
 > If you want to utilize the POST endpoint, you can copy the body from https://randomuser.me/api/?results=1 ;it's 1:1 .  

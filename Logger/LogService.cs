@@ -40,7 +40,9 @@ namespace Logger
 
             var testx = Path.Exists(ok);
 
-            using FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read);
+            // TODO: Implement exception handling and a better path check.
+            // get last x line (seek)
+            using FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read); 
             using StreamReader reader = new StreamReader(fileStream);
 
             StringBuilder sb = new();

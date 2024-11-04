@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MongoCrudPeopleApi.Controllers
 {
+    //todo api key authorization part2
     [Route("logs")]
     [Tags("z-Logs")]
     [ApiController]
@@ -18,7 +19,9 @@ namespace MongoCrudPeopleApi.Controllers
         /// 
         /// </summary>
         /// <remarks>
-        /// (time saved as UTC)
+        /// (time saved as UTC)    
+        /// you can always manually edit the dates in the file; just make sure to respect the timestamp ;    
+        /// 
         /// </remarks>
         /// <param name="body"> max lenght 50 : message - string </param>
         /// <param name="ex">enabling this will throw an exception</param>
@@ -44,20 +47,20 @@ namespace MongoCrudPeopleApi.Controllers
         /// howtouse :   
         ///  - option1 -     
         ///         [singledate] startdate only  , year param is required ;the rest is optional    
-        ///         {"startdate": {"year": 2024,"month": 1}}  --> all records from january year 2024.   
-        ///         {"startdate": {"year": 2024,"day": 1,"hour": 12}}  ---> all records from the first day of each month that match midday (time is UTC).
-        ///         {"startdate": {"year": 2024,"second":21}} ---> all logs that start at the 21st second
-        ///         etc..
+        ///         {"startdate": {"year": 2024,"month": 1}}  --> all records from january year 2024.     
+        ///         {"startdate": {"year": 2024,"day": 1,"hour": 12}}  ---> all records from the first day of each month that match midday (time is UTC).     
+        ///         {"startdate": {"year": 2024,"second":21}} ---> all logs that start at the 21st second     
+        ///         etc..    
         ///  - option2 -        
-        ///         [rangedate] startdate and enddate ,  year-month-day parameters required .Enddate must be greater than startdate.(hour,min,sec are OPTIONal) if you are using hour-min-sec, hour must not be null. 
-        ///         {"startdate": {"year": 2024,"month": 11,"day": 4},"enddate": {"year": 2024,"month": 11,"day": 30}}  ---> leaving timeonly unspecified will default to midnight : h00:m00:s00 .mean endate = day30-hour00-min00-sec00                       
-        ///         {"startdate": {"year": 2024,"month": 11,"day": 4,"hour":14},"enddate": {"year": 2024,"month": 11,"day": 5 } }  ---> range : from y-m-day4-hour14 to y-m-day5-hour00-min00-sec00 
-        ///         {"startdate": {"year": 2024,"month": 11, "day": 4,"hour": 14},"enddate": {"year": 2024,"month":11, "day": 5,"hour": 8 } }
+        ///         [rangedate] startdate and enddate ,  year-month-day parameters required .Enddate must be greater than startdate.(hour,min,sec are OPTIONal) if you are using hour-min-sec, hour must not be null.     
+        ///         {"startdate": {"year": 2024,"month": 11,"day": 4},"enddate": {"year": 2024,"month": 11,"day": 30}}  ---> leaving timeonly unspecified will default to midnight : h00:m00:s00 .mean endate = day30-hour00-min00-sec00                           
+        ///         {"startdate": {"year": 2024,"month": 11,"day": 4,"hour":14},"enddate": {"year": 2024,"month": 11,"day": 5 } }  ---> range : from y-m-day4-hour14 to y-m-day5-hour00-min00-sec00      
+        ///         {"startdate": {"year": 2024,"month": 11, "day": 4,"hour": 14},"enddate": {"year": 2024,"month":11, "day": 5,"hour": 8 } }     
         /// </remarks>
         /// <param name="dateinput"></param>
         /// <returns></returns>
         [HttpPost("readfile")]
-        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput)
+        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput) 
         {
 
 
@@ -72,7 +75,7 @@ namespace MongoCrudPeopleApi.Controllers
 
                 if (!DateTime.TryParse(dateinput.Startdate.ToString(), out var start)) return BadRequest("invalid startdate ");
 
-                if (start >= end) return BadRequest("enddate must be bigger then startdate");
+                if (start >= end) return BadRequest("enddate must be later then startdate");
             }
 
         
@@ -81,7 +84,7 @@ namespace MongoCrudPeopleApi.Controllers
 
             return Ok(data);
 
-            //return Ok(start);
+          
         }
 
        
