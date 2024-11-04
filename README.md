@@ -24,15 +24,16 @@ in progress
 > 
 > ![Screenshot 2024-05-09 122011](https://github.com/SognoLucido/MongoCRUD-api/assets/123832236/bdea874a-3297-4a9f-b274-3b30deec3ecb)
 
-The POST endpoint has duplicate protection before inserting data into the db
+The POST endpoint includes duplicate protection before inserting data into the database
 
 ## TODO
-I'm rewriting this mess – in progress
+
 - [x] Optimize queries
+- [ ] Logging to a file and retrieving log information using apikey
 - [ ] Unit/Integ testing
 - [x] Docker implementation
 
 
 
-# Live Demo
+## Live Demo
 soon
