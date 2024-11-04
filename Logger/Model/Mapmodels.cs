@@ -1,6 +1,6 @@
 ﻿namespace Logger.Model
 {
-    public class DateMap
+    public class Datemap
     {
         public int Month { get; set; }
         public int Day { get; set; }

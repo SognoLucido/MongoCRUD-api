@@ -1,4 +1,6 @@
 ﻿using Logger.Model;
+using Logger.Model.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
@@ -15,8 +17,23 @@ namespace Logger
 
 
         ////plainText
-        public async Task<string> ReadLog(DateTime start /*, DateTime? end*/)
+        public async Task<string> ReadLog(DateDtomodel rawdata,bool addtimeonly)
         {
+
+            bool filterRangeOff = rawdata.Enddate is null;
+            //DateTime[]? Datetimerange = filterRangeOff ?  null : new DateTime[2];
+            DateTime[]? Datetimerange = new DateTime[2];
+            string StartdateOnly  = string.Empty;
+
+            if (!filterRangeOff) 
+            {
+                Datetimerange = ModeltoDateTime(rawdata,addtimeonly);
+            }
+            else
+            {
+                StartdateOnly = rawdata.Startdate.ToString();
+            }
+
             var test = Directory.GetCurrentDirectory();
 
             var ok = Path.Combine(test, "Logs/log.txt");
@@ -38,21 +55,27 @@ namespace Logger
 
                     string? checkValidline = line.Length >= 19 ? line.Substring(0, 19) : null;
 
-                    if(checkValidline is not null)
-                    if (DateTime.TryParse(checkValidline, out var date))
-                    {  
-                        // check if the date corrispond to range of the one selected on the endpoint
-                        if (datenormalizer(date,start) == start)
+                    if (checkValidline is not null)
+                        if (DateTime.TryParseExact(checkValidline, "yyyy-MM-dd HH:mm:ss",
+                           System.Globalization.CultureInfo.InvariantCulture,
+                           System.Globalization.DateTimeStyles.None, out var date))
                         {
-                            msg = true;
-                        }
-                        else
-                        {
-                            msg = false;
-                        }
 
 
-                    }
+                            if (filterRangeOff)
+                            {
+                                if (datenormalizerv2(date, rawdata) == StartdateOnly) msg = true;
+                                else msg = false;
+                            }
+                            else
+                            {
+                                if (Datetimerange[0] <= date && Datetimerange[1] >= date)  msg = true;
+                                else msg = false;
+                            }
+                            
+
+
+                        }
 
 
 
@@ -74,28 +97,7 @@ namespace Logger
         }
 
 
-        private DateTime datenormalizer(DateTime fetched, DateTime userinput)
-        {
-
-            var tempdata = new DateMap()
-            {
-               Month = fetched.Month,
-               Day = fetched.Day,
-               Hour = fetched.Hour,
-               Minutes = fetched.Minute,
-               Seconds = fetched.Second,
-            };
-
-            if (userinput.Second == 00) tempdata.Seconds = 00;
-            if (userinput.Minute == 00) tempdata.Minutes = 00;
-            if (userinput.Hour == 00) tempdata.Hour = 00;
-            if (userinput.Day == 00) tempdata.Day = 00;
-            if (userinput.Month == 00) tempdata.Month = 00;
-
-
-            return new DateTime(fetched.Year,tempdata.Month,tempdata.Day,tempdata.Hour,tempdata.Minutes,tempdata.Seconds);
-        }
-
+      
 
         //plainText
         public async Task WriteLog(string? body, LogLevelError lev, bool throwerror)
@@ -142,6 +144,71 @@ namespace Logger
         }
 
 
+        ///////////////////
+
+
+
+        //private DateTime datenormalizer(DateTime fetched, DateTime userinput)
+        //{
+
+        //    var tempdata = new Datemap()
+        //    {
+        //       Month = fetched.Month,
+        //       Day = fetched.Day,
+        //       Hour = fetched.Hour,
+        //       Minutes = fetched.Minute,
+        //       Seconds = fetched.Second,
+        //    };
+
+        //    if (userinput.Second == 00) tempdata.Seconds = 00;
+        //    if (userinput.Minute == 00) tempdata.Minutes = 00;
+        //    if (userinput.Hour == 00) tempdata.Hour = 00;
+        //    if (userinput.Day == 00) tempdata.Day = 00;
+        //    if (userinput.Month == 00) tempdata.Month = 00;
+
+
+        //    return new DateTime(fetched.Year,tempdata.Month,tempdata.Day,tempdata.Hour,tempdata.Minutes,tempdata.Seconds);
+        //}
+        private string datenormalizerv2(DateTime fetched, DateDtomodel userinput)
+        {
+
+            var tempdata = new Datemap()
+            {
+                Month = fetched.Month,
+                Day = fetched.Day,
+                Hour = fetched.Hour,
+                Minutes = fetched.Minute,
+                Seconds = fetched.Second,
+            };
+
+            if (userinput.Startdate.Second is null) tempdata.Seconds = 0;
+            if (userinput.Startdate.Minute is null) tempdata.Minutes = 0;
+            if (userinput.Startdate.Hour is null) tempdata.Hour = 0;
+            if (userinput.Startdate.Day is null) tempdata.Day = 0;
+            if (userinput.Startdate.Month is null) tempdata.Month = 0;
+
+            //2024-11-03 16:43:21
+            return $"{fetched.Year}-{tempdata.Month}-{tempdata.Day} {tempdata.Hour}:{tempdata.Minutes}:{tempdata.Seconds}";
+        }
+
+        private DateTime[] ModeltoDateTime(DateDtomodel data,bool adddatetime)
+        {
+
+            DateTime? temp;
+
+            DateTime[] StartNend =
+            [
+                new(data.Startdate.Year, data.Startdate.Month ?? 0, data.Startdate.Day ?? 0, data.Startdate.Hour ?? 0, data.Startdate.Minute ?? 0, data.Startdate.Second ?? 0),
+                new(data.Enddate!.Year, data.Enddate.Month , data.Enddate.Day , data.Enddate.Hour ?? 0, data.Enddate.Minute ?? 0, data.Enddate.Second ?? 0)
+
+            ];
+
+
+
+
+
+            return StartNend;
+        }
 
 
 
