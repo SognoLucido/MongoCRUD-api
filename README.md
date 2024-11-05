@@ -10,7 +10,7 @@ in progress
 - serilog(appsettings base config) console & file
 - Mvc Controllers
 - Minimal api (todo)
-- apikey auth (todo)
+- apikey auth 
 - xunit (todo)
 - Testcontainers (todo)
 - SwaggerUI
@@ -19,7 +19,8 @@ in progress
 - MongoDB.Driver
 
 > [!NOTE]
-> If you want to utilize the POST endpoint, you can copy the body from https://randomuser.me/api/?results=1 ;it's 1:1 .  
+> The database is empty by default. Copy the body from https://randomuser.me/api/?results=1; it's a 1:1 ,   
+> and then post it to /api/user to fill the database .  
 > You can also POST multiple results ( ?results=x )
 > 
 > ![Screenshot 2024-05-09 122011](https://github.com/SognoLucido/MongoCRUD-api/assets/123832236/bdea874a-3297-4a9f-b274-3b30deec3ecb)
@@ -29,7 +30,7 @@ The POST endpoint includes duplicate protection before inserting data into the d
 ## TODO
 
 - [x] Optimize queries
-- [ ] Logging to a file and retrieving log information using apikey
+- [x] Logging to a file and retrieving log information using apikey
 - [ ] Unit/Integ testing
 - [x] Docker implementation
 

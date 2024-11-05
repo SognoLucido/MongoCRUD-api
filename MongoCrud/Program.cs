@@ -1,9 +1,11 @@
+using Bookstore_backend;
 using Logger;
 using Microsoft.OpenApi.Models;
 using MongoCrudPeopleApi.Auth;
 using Mongodb;
 using Mongodb.Services;
 using MongoLogic.CRUD;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -32,6 +34,18 @@ builder.Services.AddControllers()
 builder.Services.AddSwaggerGen(opt =>
 {
 
+    opt.AddSecurityDefinition("apikey", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Login using Apikey",
+        Name = "x-api-key",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "x-api-key"
+
+
+    });
+
+
     opt.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
@@ -44,6 +58,10 @@ builder.Services.AddSwaggerGen(opt =>
         }
 
     });
+
+  
+    opt.OperationFilter<AuthResponsesOperationFilter>();
+
 
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));

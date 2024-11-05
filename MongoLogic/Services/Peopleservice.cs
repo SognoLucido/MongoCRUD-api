@@ -90,7 +90,7 @@ public class Peopleservice : IPeopleservice
         }
         catch (Exception ex)
         {
-            log.LogError("PATCHuserItemError-{}", ex.Message);
+            log.LogError(ex,"PATCHuserItemError" );
 
             statusC = 500;
         }
@@ -158,11 +158,11 @@ public class Peopleservice : IPeopleservice
         }
         catch (MongoConnectionException ex)
         {
-            log.LogError("Database Connection error{}", ex.Message);
+            log.LogError( ex,"Database Connection error");
         }
         catch (Exception ex)
         {
-            log.LogError("{}", ex.Message);
+            log.LogError(ex, "BulkSearchUsers-error");
         }
 
 
@@ -233,11 +233,11 @@ public class Peopleservice : IPeopleservice
         }
         catch (MongoConnectionException ex)
         {
-            log.LogError("Database Connection error{}", ex.Message);
+            log.LogError(ex,"Database Connection error");
         }
         catch (Exception ex)
         {
-            log.LogError("{}", ex.Message);
+            log.LogError (ex,"Searchuser-error");
         }
 
 
@@ -279,14 +279,21 @@ public class Peopleservice : IPeopleservice
                         x.Location.City,
                         x.Location.State,
                         x.Location.Country
-                    )
+                    ),
+
+                    userid = x.Login.Uuid
+                    
 
                 })
                 .ToListAsync();
         }
         catch (MongoConnectionException ex)
         {
-            log.LogError("Database Connection error{}", ex.Message);
+            log.LogError(ex,"Database Connection error");
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "@RangeAgeuser-error");
         }
 
         return data.Count == 0 ? null : data;
@@ -367,7 +374,7 @@ public class Peopleservice : IPeopleservice
             }
             catch (Exception ex)
             {
-                log.LogError("Insert Item : {}", ex.Message);
+                log.LogError(ex,"Insert Item-error ");
                 statusCode = 500;
                 sb.Clear();
                 sb.AppendLine("An error occurred, request aborted ");
@@ -403,34 +410,20 @@ public class Peopleservice : IPeopleservice
         return result?.DeletedCount > 0;
     }
 
+    //public Task testex()
+    //{
+    //    try
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        log.LogError(ex, "@RangeAgeuser-error");
+    //    }
 
+    //  return Task.CompletedTask;
 
-
-
-    public async Task<bool> RemovebyUuidAsync(Guid id)
-    {
-        var x = await _pplCollection.DeleteOneAsync(x => x.Login.Uuid == id);
-
-
-        return x.DeletedCount > 0;
-    }
-
-
-
-    public async Task<bool> RemovebyEmailAsync(string email)
-    {
-        var x = await _pplCollection.DeleteOneAsync(x => x.Email == email);
-
-        return x.DeletedCount > 0;
-
-    }
-
-
-
-
-
-
-
+    //}
 }
 
 

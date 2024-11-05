@@ -1,12 +1,13 @@
 ﻿using Logger;
 using Logger.Model.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 
 namespace MongoCrudPeopleApi.Controllers
 {
-    //todo api key authorization part2
+    [Authorize]
     [Route("logs")]
     [Tags("z-Logs")]
     [ApiController]
@@ -16,11 +17,13 @@ namespace MongoCrudPeopleApi.Controllers
         private readonly LogService logdata = logservice;
 
         /// <summary>
-        /// 
+        ///  api key : 32B66F391C7142F994974A99C509817B    
+        ///  header : x-api-key
         /// </summary>
         /// <remarks>
         /// (time saved as UTC)    
-        /// you can always manually edit the dates in the file; just make sure to respect the timestamp ;    
+        /// you can always manually edit the dates in the file; just make sure to respect the timestamp       
+        /// verbose and debug level logs are saved only to file     
         /// 
         /// </remarks>
         /// <param name="body"> max lenght 50 : message - string </param>

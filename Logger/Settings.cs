@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.Diagnostics;
 
 namespace Logger
 {
@@ -20,8 +21,11 @@ namespace Logger
 
                 opt.ReadFrom.Configuration(configuration);
 
+                
 
             });
+
+
 
         }
     }

@@ -1,6 +1,5 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#use docker compose
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
@@ -9,13 +8,14 @@ EXPOSE 8080
 
 #TempConnectionstring
 ENV INIT_VAR="mongodb://root:example@mongodb:27017"
+#Tempkey
+ENV API_KEY="32B66F391C7142F994974A99C509817B"
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["MongoCrud/MongoCrudPeopleApi.csproj", "MongoCrud/"]
-COPY ["MongoLogic/Mongodb.csproj", "MongoLogic/"]
+
 RUN dotnet restore "./MongoCrud/MongoCrudPeopleApi.csproj"
 COPY . .
 WORKDIR "/src/MongoCrud"

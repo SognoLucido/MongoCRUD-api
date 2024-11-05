@@ -217,6 +217,15 @@ public class MongoUsercrudController(IPeopleservice peopleservice) : ControllerB
 
 
 
+    //[HttpGet]
+    //public async Task<IActionResult> test()
+    //{
+
+    //    await dbcall.testex();
+    //    return Ok();    
+    //}
+
+
    
 
 }

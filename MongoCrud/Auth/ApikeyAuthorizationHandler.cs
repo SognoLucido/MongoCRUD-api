@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -11,16 +10,16 @@ namespace MongoCrudPeopleApi.Auth
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiOptions>  
     {
         private const string ApiKeyHeaderName = "x-api-key";
-        private const string ApiKeyValue = "secretkey";
+        private readonly string ApiKeyValue;
      //   private readonly ILogger log ;
 
 
         public ApiKeyAuthenticationHandler(
         IOptionsMonitor<ApiOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder) : base(options, logger, encoder)
+        UrlEncoder encoder , IConfiguration conf) : base(options, logger, encoder)
         {
-
+            ApiKeyValue = conf["API_KEY"]!;
            // log = logger.CreateLogger<ApiKeyAuthenticationHandler>();
         }
 
@@ -56,7 +55,7 @@ namespace MongoCrudPeopleApi.Auth
                 return AuthenticateResult.NoResult();
             }
 
-            if (providedApiKey != ApiKeyValue)
+            if (!ApiKeyValue.Equals(providedApiKey,StringComparison.OrdinalIgnoreCase))
             {
                 return AuthenticateResult.NoResult();
             }

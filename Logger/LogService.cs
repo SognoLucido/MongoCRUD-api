@@ -66,7 +66,7 @@ namespace Logger
 
                             if (filterRangeOff)
                             {
-                                if (datenormalizerv2(date, rawdata) == StartdateOnly) msg = true;
+                                if (Datenormalizerv2(date, rawdata) == StartdateOnly) msg = true;
                                 else msg = false;
                             }
                             else
@@ -116,7 +116,7 @@ namespace Logger
 
                     switch (lev)
                     {
-                        case LogLevelError.Verbose: log.LogTrace(ex, body); break;
+                        case LogLevelError.Verbose: log.LogTrace( ex,body); break;
                         case LogLevelError.Debug: log.LogDebug(ex, body); break;
                         case LogLevelError.Information: log.LogInformation(ex, body); break;
                         case LogLevelError.Warning: log.LogWarning(ex, body); break;
@@ -146,32 +146,8 @@ namespace Logger
         }
 
 
-        ///////////////////
-
-
-
-        //private DateTime datenormalizer(DateTime fetched, DateTime userinput)
-        //{
-
-        //    var tempdata = new Datemap()
-        //    {
-        //       Month = fetched.Month,
-        //       Day = fetched.Day,
-        //       Hour = fetched.Hour,
-        //       Minutes = fetched.Minute,
-        //       Seconds = fetched.Second,
-        //    };
-
-        //    if (userinput.Second == 00) tempdata.Seconds = 00;
-        //    if (userinput.Minute == 00) tempdata.Minutes = 00;
-        //    if (userinput.Hour == 00) tempdata.Hour = 00;
-        //    if (userinput.Day == 00) tempdata.Day = 00;
-        //    if (userinput.Month == 00) tempdata.Month = 00;
-
-
-        //    return new DateTime(fetched.Year,tempdata.Month,tempdata.Day,tempdata.Hour,tempdata.Minutes,tempdata.Seconds);
-        //}
-        private string datenormalizerv2(DateTime fetched, DateDtomodel userinput)
+       
+        private string Datenormalizerv2(DateTime fetched, DateDtomodel userinput)
         {
 
             var tempdata = new Datemap()
@@ -196,18 +172,13 @@ namespace Logger
         private DateTime[] ModeltoDateTime(DateDtomodel data,bool adddatetime)
         {
 
-            DateTime? temp;
 
-            DateTime[] StartNend =
+           DateTime[] StartNend =
             [
                 new(data.Startdate.Year, data.Startdate.Month ?? 0, data.Startdate.Day ?? 0, data.Startdate.Hour ?? 0, data.Startdate.Minute ?? 0, data.Startdate.Second ?? 0),
                 new(data.Enddate!.Year, data.Enddate.Month , data.Enddate.Day , data.Enddate.Hour ?? 0, data.Enddate.Minute ?? 0, data.Enddate.Second ?? 0)
 
             ];
-
-
-
-
 
             return StartNend;
         }
