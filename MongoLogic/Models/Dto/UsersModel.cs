@@ -9,25 +9,25 @@ namespace Mongodb.Models.Dto
     public class UsersModel
     {
         [Length(3,15)]
-        public string? Firstname {  get; set; }
+        public string? firstname {  get; set; }
 
         [Length(3,15)]
-        public string? Lastname { get; set; }
+        public string? lastname { get; set; }
 
         [Length(3,20)]
-        public string? State { get; set; }
+        public string? state { get; set; }
 
         [Length(3,20)]
-        public string? Country { get; set; }
+        public string? country { get; set; }
 
-        public string? Email { get; set; }
+        public string? email { get; set; }
 
         //[BsonGuidRepresentation(GuidRepresentation.Standard)]
-        public Guid? Uuid { get; set; }
+        public Guid? uuid { get; set; }
 
-        public int? Age { get; set; }
+        public int? age { get; set; }
 
-        public string? PhoneNumber {  get; set; }
+        public string? phoneNumber {  get; set; }
 
 
 

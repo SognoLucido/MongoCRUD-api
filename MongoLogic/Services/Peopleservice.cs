@@ -187,24 +187,24 @@ public class Peopleservice : IPeopleservice
         var filterBuilder = Builders<PersonDbModel>.Filter;
         var filters = new List<FilterDefinition<PersonDbModel>>();
 
-        if (userdata.Firstname is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.Firstname)));
-        if (userdata.Lastname is not null) filters.Add(filterBuilder.Regex(d => d.Name.Last, new BsonRegularExpression(userdata.Lastname)));
-        if (userdata.State is not null) filters.Add(filterBuilder.Regex(d => d.Location.State, new BsonRegularExpression(userdata.State)));
-        if (userdata.Country is not null) filters.Add(filterBuilder.Regex(d => d.Location.Country, new BsonRegularExpression(userdata.Country)));
-        if (userdata.Email is not null) filters.Add(filterBuilder.Regex(d => d.Email, new BsonRegularExpression(userdata.Email)));
-        if (userdata.Uuid is not null) filters.Add(filterBuilder.Eq(d => d.Login.Uuid, userdata.Uuid));
-        if (userdata.Age is not null) filters.Add(filterBuilder.Eq(d => d.Dob.Age, (int)userdata.Age));
-        if (userdata.PhoneNumber is not null) filters.Add(filterBuilder.Regex(d => d.Phone, new BsonRegularExpression(userdata.PhoneNumber)));
+        if (userdata.firstname is not null) filters.Add(filterBuilder.Regex(d => d.Name.First, new BsonRegularExpression(userdata.firstname)));
+        if (userdata.lastname is not null) filters.Add(filterBuilder.Regex(d => d.Name.Last, new BsonRegularExpression(userdata.lastname)));
+        if (userdata.state is not null) filters.Add(filterBuilder.Regex(d => d.Location.State, new BsonRegularExpression(userdata.state)));
+        if (userdata.country is not null) filters.Add(filterBuilder.Regex(d => d.Location.Country, new BsonRegularExpression(userdata.country)));
+        if (userdata.email is not null) filters.Add(filterBuilder.Regex(d => d.Email, new BsonRegularExpression(userdata.email)));
+        if (userdata.uuid is not null) filters.Add(filterBuilder.Eq(d => d.Login.Uuid, userdata.uuid));
+        if (userdata.age is not null) filters.Add(filterBuilder.Eq(d => d.Dob.Age, (int)userdata.age));
+        if (userdata.phoneNumber is not null) filters.Add(filterBuilder.Regex(d => d.Phone, new BsonRegularExpression(userdata.phoneNumber)));
 
 
         var filter = filterBuilder.And(filters);
 
 
-
+       // var testbuilder = filterBuilder.Eq(p => p.Email, userdata.email);
 
         try
         {
-
+         //  var datav2 = await _pplCollection.Find(testbuilder).ToListAsync();
 
             data = await _pplCollection
                   .Find(filter)

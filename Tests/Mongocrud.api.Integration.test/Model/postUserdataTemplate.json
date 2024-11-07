@@ -1,0 +1,66 @@
+{
+  "results": [
+    {
+      "gender": "male",
+      "name": {
+        "title": "Mr",
+        "first": "Brian",
+        "last": "Day"
+      },
+      "location": {
+        "street": {
+          "number": 409,
+          "name": "W Campbell Ave"
+        },
+        "city": "St. Louis",
+        "state": "Pennsylvania",
+        "country": "United States",
+        "postcode": 77417,
+        "coordinates": {
+          "latitude": "83.6369",
+          "longitude": "-148.3784"
+        },
+        "timezone": {
+          "offset": "-3:30",
+          "description": "Newfoundland"
+        }
+      },
+      "email": "brian.day@example.com",
+      "login": {
+        "uuid": "1340edcb-410e-4008-955d-49d3c679c62b",
+        "username": "goldensnake330",
+        "password": "emerson",
+        "salt": "ted6aaGh",
+        "md5": "c7f1b1780112dc767d4e172807cc8587",
+        "sha1": "083716ae924691b3664247d55b291b250054e500",
+        "sha256": "a90dd269a03e3f9345909538882d7a9fefe6923f68fdc7aee80b1a497aa69f78"
+      },
+      "dob": {
+        "date": "1977-07-26T15:04:05.473Z",
+        "age": 47
+      },
+      "registered": {
+        "date": "2019-10-27T09:51:36.063Z",
+        "age": 5
+      },
+      "phone": "(834) 673-1777",
+      "cell": "(498) 320-2654",
+      "id": {
+        "name": "SSN",
+        "value": "044-31-2332"
+      },
+      "picture": {
+        "large": "https://randomuser.me/api/portraits/men/24.jpg",
+        "medium": "https://randomuser.me/api/portraits/med/men/24.jpg",
+        "thumbnail": "https://randomuser.me/api/portraits/thumb/men/24.jpg"
+      },
+      "nat": "US"
+    }
+  ],
+  "info": {
+    "seed": "9beb511252913fca",
+    "results": 1,
+    "page": 1,
+    "version": "1.4"
+  }
+}

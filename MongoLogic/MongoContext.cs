@@ -23,6 +23,9 @@ public class MongoContext
     public MongoContext(string conn)
     {
        
+
+
+
         Peopledb =  new MongoClient(conn).GetDatabase(Database.Peopledb.ToString());
     }
 

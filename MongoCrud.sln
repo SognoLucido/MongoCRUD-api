@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongodb", "MongoLogic\Mongo
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{85101FF9-A64B-4188-9C29-50A6BD4FF052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csproj", "{0613A51C-37A5-455F-A7C5-B83E694BAE7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger", "Logger\Logger.csproj", "{0613A51C-37A5-455F-A7C5-B83E694BAE7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9632EA55-8258-4384-9939-614A370DDB83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mongocrud.api.Integration.test", "Tests\Mongocrud.api.Integration.test\Mongocrud.api.Integration.test.csproj", "{0532E819-1279-4210-BBB1-58E3E0653000}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{0613A51C-37A5-455F-A7C5-B83E694BAE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0613A51C-37A5-455F-A7C5-B83E694BAE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0613A51C-37A5-455F-A7C5-B83E694BAE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0532E819-1279-4210-BBB1-58E3E0653000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0532E819-1279-4210-BBB1-58E3E0653000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0532E819-1279-4210-BBB1-58E3E0653000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0532E819-1279-4210-BBB1-58E3E0653000}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0532E819-1279-4210-BBB1-58E3E0653000} = {9632EA55-8258-4384-9939-614A370DDB83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E227B6D-0A68-4EC8-BB97-23BACD10F9CD}

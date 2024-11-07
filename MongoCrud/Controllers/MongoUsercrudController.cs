@@ -14,11 +14,16 @@ namespace MongoCrudPeopleApi.Controllers;
 [Route("api/user")]
 [Tags("User")]
 [ApiController]
-public class MongoUsercrudController(IPeopleservice peopleservice) : ControllerBase
+public class MongoUsercrudController : ControllerBase
 {
 
+    private readonly IPeopleservice dbcall;
 
-    private readonly IPeopleservice dbcall = peopleservice;
+    public MongoUsercrudController(IPeopleservice _peopleservice)
+    {
+        dbcall = _peopleservice;
+    }
+    
 
 
 
@@ -217,15 +222,15 @@ public class MongoUsercrudController(IPeopleservice peopleservice) : ControllerB
 
 
 
-    //[HttpGet]
-    //public async Task<IActionResult> test()
+    //[HttpPost("ok")]
+    //public async Task<IActionResult> test([FromBody] PersonApiModel Value)
     //{
 
-    //    await dbcall.testex();
-    //    return Ok();    
+    //    //await dbcall.testex();
+    //    return Ok();
     //}
 
 
-   
+
 
 }
