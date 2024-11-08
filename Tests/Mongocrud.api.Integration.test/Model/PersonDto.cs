@@ -56,7 +56,16 @@ namespace Mongocrud.api.Integration.test.Model
                 },
                 Location = this.Location,
                 Email = this.Email,
-                Login = this.Login,
+                Login = new Login 
+                {
+                   Uuid = this.Login.Uuid,
+                   Username = this.Login.Username,
+                   Password = this.Login.Password,
+                   Salt = this.Login.Salt,
+                   Md5 = this.Login.Md5,
+                   Sha1 = this.Login.Sha1,
+                   Sha256 = this.Login.Sha256,
+                },
                 Dob = new Dob
                 {
                     Age = this.Dob.Age,
@@ -69,7 +78,7 @@ namespace Mongocrud.api.Integration.test.Model
                 Picture = this.Picture,
                 Nat = this.Nat
                
-        
+                
             };
 
 

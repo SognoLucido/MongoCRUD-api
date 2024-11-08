@@ -69,6 +69,20 @@ namespace Mongocrud.api.Integration.test
                 }
 
             }
+            else if (userlist is List<Changeuserpatch> patchmodel)
+            {
+                for (int i = 0; i < templist.Count; i++)
+                {
+                    templist[i].Name.First = patchmodel[i].Firstname;
+                    templist[i].Name.Last = patchmodel[i].Lastname;
+                    templist[i].Email = patchmodel[i].Email;
+
+                    if (!Guid.TryParse(patchmodel[i].Uuid, out Guid result)) throw new FormatException("invalid Changeuserpatch uuid");
+
+                    templist[i].Login.Uuid = result;
+                }
+            }
+
 
             data.Results = templist;
 
@@ -79,37 +93,23 @@ namespace Mongocrud.api.Integration.test
 
 
 
+        public async Task<StringContent> SerializeClassToJson<T>(T data) where T : class
+        {
+
+            string rawjsonstring = JsonSerializer.Serialize(data);
+
+            return new StringContent(rawjsonstring,Encoding.UTF8, "application/json");
+        }
+
+
+
+
         public async Task<string> CreateJsonUsers(List<ChangeuserLong> userlist)
         {
             throw new NotImplementedException();
         }
 
 
-        //public async Task<string> CreateJsonUsers()
-        //{
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        //PropertyNamingPolicy = new LowercaseNamingPolicy(),
-        //        PropertyNameCaseInsensitive = true,
-
-        //    };
-
-
-        //    string jsonContent = await File.ReadAllTextAsync(filepath);
-
-
-        //    var data = JsonSerializer.Deserialize<PersonDto>(jsonContent, options);
-
-
-        //    Console.WriteLine();
-
-
-
-        //    string test = JsonSerializer.Serialize(data);
-
-        //    return test;
-
-        //}
 
 
     }

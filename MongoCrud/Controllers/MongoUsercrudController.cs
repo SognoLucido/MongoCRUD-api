@@ -124,6 +124,9 @@ public class MongoUsercrudController : ControllerBase
     public async Task<IActionResult> PatchUserItem([FromQuery] PatchUserItemModel request, [FromBody][Required] UserItemPatchModel patchdata)
     {
 
+
+
+
         if (request.userid is null && request.email is null) return BadRequest();
         if (request.userid is not null && request.email is not null) return BadRequest("choose one ");
 
