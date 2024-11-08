@@ -23,7 +23,7 @@ public class ProgramTestApplicationFactory : WebApplicationFactory<Program>, IAs
             if(dbContext is not null)
             services.Remove(dbContext);
 
-            var serilogService = services.FirstOrDefault(s => s.ServiceType == typeof(ILogger));
+            var serilogService = services.FirstOrDefault(s => s.ServiceType == typeof(LoggerConfiguration));
             if (serilogService is not null)
                 services.Remove(serilogService);
 

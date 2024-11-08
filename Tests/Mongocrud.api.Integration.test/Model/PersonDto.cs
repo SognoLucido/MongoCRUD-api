@@ -14,12 +14,7 @@ namespace Mongocrud.api.Integration.test.Model
     {
         public List<PersonDbModeldto> Results { get; set; }
 
-        
-
     }
-
-
-
 
     public class PersonDbModeldto
     {

@@ -104,16 +104,10 @@ public class Peopletests(ProgramTestApplicationFactory factory) : IClassFixture<
         //////////
 
 
-      var test =  await client.PatchAsync($"api/user?email={userToinsert[0].Email}", patchNameNLastName);
-
-
-
-       var pep = await client.PatchAsync($"api/user?uuid={userToinsert[0].Uuid}", patchEmail);
-
-
+         await client.PatchAsync($"api/user?email={userToinsert[0].Email}", patchNameNLastName);
+         await client.PatchAsync($"api/user?userid={userToinsert[0].Uuid}", patchEmail);
 
         var Getpatcheduser = await client.GetFromJsonAsync<List<Changeusershort>>($"api/user/search?uuid={userToinsert[0].Uuid}");
-
 
 
         //////////
@@ -125,6 +119,11 @@ public class Peopletests(ProgramTestApplicationFactory factory) : IClassFixture<
 
 
     }
+
+
+
+
+
 
 
 
