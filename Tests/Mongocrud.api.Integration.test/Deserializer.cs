@@ -1,5 +1,6 @@
 ﻿
 using Mongocrud.api.Integration.test.Model;
+using Mongodb.Models.Dto;
 using System.Text;
 using System.Text.Json;
 
@@ -103,12 +104,21 @@ namespace Mongocrud.api.Integration.test
 
 
 
-
-        public async Task<string> CreateJsonUsers(List<ChangeuserLong> userlist)
+        public async Task<BulkUserModel> CreatebulkBody(List<Changeusershort> data)
         {
-            throw new NotImplementedException();
-        }
+          
 
+            return new BulkUserModel()
+            {
+                Firstname = [data[0].Firstname, data[1].Firstname],
+                Lastname = [data[2].Lastname],
+                Email = [data[4].Email]
+            };
+
+
+          
+
+        }
 
 
 
