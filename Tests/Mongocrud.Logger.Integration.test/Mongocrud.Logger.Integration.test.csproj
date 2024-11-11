@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EndpointsTests\" />
+    <ProjectReference Include="..\..\MongoCrud\MongoCrudPeopleApi.csproj" />
+    <ProjectReference Include="..\SharedClass\CoreTestLib.csproj" />
   </ItemGroup>
 
 </Project>

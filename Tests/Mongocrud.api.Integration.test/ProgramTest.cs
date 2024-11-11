@@ -29,11 +29,6 @@ public class ProgramTestApplicationFactory : WebApplicationFactory<Program>, IAs
             services.Remove(dbContext);
 
 
-            //var LoggersService = services.FirstOrDefault(s => s.ServiceType == typeof(ILoggerFactory));
-            //if (serilogService is not null)
-            //    services.Remove(serilogService);
-
-
             builder.ConfigureLogging(opt =>
             {
                 opt.ClearProviders();
@@ -41,33 +36,14 @@ public class ProgramTestApplicationFactory : WebApplicationFactory<Program>, IAs
 
 
 
-
             services.AddSingleton<MongoContext>(container => new(_mongoDbContainer.GetConnectionString()));
 
-            
 
             services.AddSingleton<Deserializer>();
-            //services.AddSingleton<Loggermock>();
-
-
-            //services.AddSingleton(_loggermock);
-
-
-
-            //todo serilog mock
+          
 
         });
 
-
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            var settings = new Dictionary<string, string>
-        {
-            { "API_KEY", "hello" }
-        };
-
-            config.AddInMemoryCollection(settings);
-        });
 
 
     }
@@ -81,11 +57,7 @@ public class ProgramTestApplicationFactory : WebApplicationFactory<Program>, IAs
 
     public new async Task DisposeAsync()
     {
-
-        await _mongoDbContainer.DisposeAsync();
-       
-        
-
+        await _mongoDbContainer.DisposeAsync();    
     }
 }
 

@@ -63,7 +63,7 @@ namespace MongoCrudPeopleApi.Controllers
         /// <param name="dateinput"></param>
         /// <returns></returns>
         [HttpPost("readfile")]
-        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput) 
+        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput) // todo find logs by logerror + seek last x line
         {
 
 
