@@ -42,7 +42,7 @@ namespace Logger
 
             // TODO: Implement exception handling and a better path check.
             // get last x line (seek)
-            using FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read); 
+            using FileStream fileStream = new FileStream(ok, FileMode.Open, FileAccess.Read, FileShare.ReadWrite); 
             using StreamReader reader = new StreamReader(fileStream);
 
             StringBuilder sb = new();
