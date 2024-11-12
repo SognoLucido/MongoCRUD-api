@@ -12,4 +12,14 @@
     <PackageReference Include="Testcontainers.MongoDb" Version="4.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\MongoCrud\MongoCrudPeopleApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Model\postUserdataTemplate.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

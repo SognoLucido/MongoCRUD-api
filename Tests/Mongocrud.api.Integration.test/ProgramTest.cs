@@ -1,12 +1,9 @@
-﻿using DnsClient.Internal;
+﻿
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Mongodb;
-using Serilog;
-using System.Diagnostics;
 using Testcontainers.MongoDb;
 
 namespace Mongocrud.api.Integration.test;

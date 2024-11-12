@@ -225,14 +225,6 @@ public class MongoUsercrudController : ControllerBase
 
 
 
-    //[HttpPost("ok")]
-    //public async Task<IActionResult> test([FromBody] PersonApiModel Value)
-    //{
-
-    //    //await dbcall.testex();
-    //    return Ok();
-    //}
-
 
 
 

@@ -200,11 +200,10 @@ public class Peopleservice : IPeopleservice
         var filter = filterBuilder.And(filters);
 
 
-       // var testbuilder = filterBuilder.Eq(p => p.Email, userdata.email);
 
         try
         {
-         //  var datav2 = await _pplCollection.Find(testbuilder).ToListAsync();
+ 
 
             data = await _pplCollection
                   .Find(filter)

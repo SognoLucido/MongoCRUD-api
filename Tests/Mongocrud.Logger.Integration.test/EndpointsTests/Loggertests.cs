@@ -25,11 +25,8 @@ public class LoggerReadtests(ProgramTestApplicationFactory factory)
 
     private readonly HttpClient client = factory.CreateClient();
     private readonly FileUtils filez = factory.Services.GetRequiredService<FileUtils>();
-    private readonly string jez = factory.Services.GetRequiredService<IConfiguration>()["API_KEY"]!;
+    private readonly string key = factory.Services.GetRequiredService<IConfiguration>()["API_KEY"]!;
 
-
-
-    //private readonly IConfiguration zzz = factory.Services.GetRequiredService<IConfiguration>();
 
 
     [Fact]
@@ -41,7 +38,7 @@ public class LoggerReadtests(ProgramTestApplicationFactory factory)
         //////////
 
 
-        client.DefaultRequestHeaders.Add("x-api-key", jez);
+        client.DefaultRequestHeaders.Add("x-api-key", key);
         await client.PostAsync($"/logs?level={LogLevelError.Verbose}", null);
         await Task.Delay(2000);
         await client.PostAsync($"/logs?level={LogLevelError.Error}", null);
@@ -81,11 +78,10 @@ public class Loggertests(ProgramTestApplicationFactory factory)
 
     private readonly HttpClient client = factory.CreateClient();
     private readonly FileUtils filez = factory.Services.GetRequiredService<FileUtils>();
-    private readonly string jez = factory.Services.GetRequiredService<IConfiguration>()["API_KEY"]!;
+    private readonly string key = factory.Services.GetRequiredService<IConfiguration>()["API_KEY"]!;
 
 
 
-    //private readonly IConfiguration zzz = factory.Services.GetRequiredService<IConfiguration>();
 
 
     [Fact]
@@ -101,7 +97,7 @@ public class Loggertests(ProgramTestApplicationFactory factory)
 
         var Unauthorized = await client.PostAsync($"/logs?level={LogLevelError.Warning}", null);
 
-        client.DefaultRequestHeaders.Add("x-api-key", jez);
+        client.DefaultRequestHeaders.Add("x-api-key", key);
         await client.PostAsync($"/logs?level={errors[0]}", null);
         await client.PostAsync($"/logs?level={errors[1]}", null);
         await client.PostAsync($"/logs?level={errors[2]}&throw-exception=true", null);

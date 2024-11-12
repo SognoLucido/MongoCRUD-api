@@ -1,7 +1,7 @@
 
 # MongoCrud
 CRUD api Based on randomuser.me/api model    
-in progress
+
 
 
 **Tools and Technologies** :
@@ -11,8 +11,8 @@ in progress
 - Mvc Controllers
 - Minimal api (todo)
 - apikey auth 
-- xunit (todo)
-- Testcontainers (todo)
+- xunit  
+- Testcontainers   
 - SwaggerUI
 - docker / compose
 - Mongodb
@@ -31,7 +31,7 @@ The POST endpoint includes duplicate protection before inserting data into the d
 
 - [x] Optimize queries
 - [x] Logging to a file and retrieving log information using apikey
-- [ ] Unit/Integ testing
+- [x] Unit/Integ testing
 - [x] Docker implementation
 
 

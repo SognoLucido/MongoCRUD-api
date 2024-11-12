@@ -12,8 +12,7 @@ namespace Mongocrud.Logger.Integration.test
     public class ProgramTestApplicationFactory : WebApplicationFactory<Program> , IAsyncLifetime
     {
 
-        //private readonly MongoDbContainer _mongoDbContainer = new MongoDbBuilder().Build();
-        //private readonly Loggermock _loggermock;
+     
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -24,7 +23,9 @@ namespace Mongocrud.Logger.Integration.test
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton<FileUtils>();
+                services.AddSingleton<FileUtils>(
+                    
+                    );
             });
 
 
@@ -47,21 +48,13 @@ namespace Mongocrud.Logger.Integration.test
 
         public async Task InitializeAsync()
         {
-            // FileUtils filez = Services.GetRequiredService<FileUtils>();
 
-            //await filez.Clearfile();
-
-
-            try
-            {
-                await File.WriteAllTextAsync("Logs/log.txt", string.Empty);
-            }
-            catch
-            {
-
-            }
+            var test = await FIlefinder.LogFilepath();
 
 
+            if(File.Exists(test))
+            await File.WriteAllTextAsync(test, string.Empty);
+           
 
         }
 

@@ -2,13 +2,9 @@
 using Logger;
 using Logger.Model.Dto;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Mongocrud.Logger.Integration.test.Models;
 using SharpCompress.Common;
-using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.Json.Nodes;
+
 
 
 
@@ -145,10 +141,31 @@ namespace Mongocrud.Logger.Integration.test
 
         }
 
+        public async Task Fileinit()
+        {
+            await File.WriteAllTextAsync(Logpath, string.Empty);
+        }
 
 
 
 
+    }
 
+
+
+    public static class FIlefinder
+    {
+        public static async Task<string> LogFilepath()
+        {
+
+            string jsonContent = await File.ReadAllTextAsync("appsettings.json");
+            var jsonNode = JsonNode.Parse(jsonContent);
+
+            string pathValue = jsonNode?["Serilog"]?["WriteTo"]?[0]?["Args"]?["configureLogger"]?["WriteTo"]?[0]?["Args"]?["path"]?.ToString();
+
+            if (string.IsNullOrEmpty(pathValue)) throw new IOException("unable to read the logger path from appsettings");
+
+            return pathValue;
+        }
     }
 }
