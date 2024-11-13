@@ -60,10 +60,11 @@ namespace MongoCrudPeopleApi.Controllers
         ///         {"startdate": {"year": 2024,"month": 11,"day": 4,"hour":14},"enddate": {"year": 2024,"month": 11,"day": 5 } }  ---> range : from y-m-day4-hour14 to y-m-day5-hour00-min00-sec00      
         ///         {"startdate": {"year": 2024,"month": 11, "day": 4,"hour": 14},"enddate": {"year": 2024,"month":11, "day": 5,"hour": 8 } }     
         /// </remarks>
-        /// <param name="dateinput"></param>
+        /// <param name="seek">Reads the last x lines from the file. Use only for a quick seek with option1.    
+        /// Seek logic is triggered before the StreamRead line-by-line date matching (open the file, navigate to the last x lines, then pass the seek position to the StreamReader ) </param>
         /// <returns></returns>
         [HttpPost("readfile")]
-        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput) // todo find logs by logerror + seek last x line
+        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput,uint? seek) // todo find logs by logerror + seek last x line
         {
 
 
@@ -83,7 +84,7 @@ namespace MongoCrudPeopleApi.Controllers
 
         
 
-            var data = await logdata.ReadLog(dateinput, true);
+            var data = await logdata.ReadLog(dateinput, seek);
 
             return Ok(data);
 

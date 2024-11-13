@@ -103,29 +103,12 @@ public class Loggertests(ProgramTestApplicationFactory factory)
         await client.PostAsync($"/logs?level={errors[2]}&throw-exception=true", null);
 
 
-
-
-        // check message send Error message and check the message
-
-
-        //try
-        //{
-        //    using FileStream fileStream = new FileStream("Logs/log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        //    using StreamReader reader = new StreamReader(fileStream);
-        //}
-        //catch (Exception zzz)
-        //{
-        //    Debug.WriteLine(zzz.Message);
-        //}
-
-
-
-        var ex = await filez.Findmatch(errors);
+        var data = await filez.Findmatch(errors);
         //////////////
 
 
         Assert.Equal(HttpStatusCode.Unauthorized, Unauthorized.StatusCode);
-        Assert.True(ex.All(p => p), "");
+        Assert.True(data.All(p => p), "");
 
     }
 

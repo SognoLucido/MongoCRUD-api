@@ -38,6 +38,8 @@ namespace Mongocrud.Logger.Integration.test
 
 
             using FileStream fileStream = new FileStream(Logpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+
             using StreamReader reader = new(fileStream);
 
             string? line = "";
@@ -83,7 +85,7 @@ namespace Mongocrud.Logger.Integration.test
 
             for(int i = 0; i < split.Length; i++)
             {
-                split[i] = split[i].Substring(0,19);
+                split[i] = split[i].Substring(1,19);
             }
 
             Console.WriteLine();
