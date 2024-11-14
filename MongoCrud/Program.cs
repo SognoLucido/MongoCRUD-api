@@ -5,7 +5,6 @@ using MongoCrudPeopleApi.Auth;
 using Mongodb;
 using Mongodb.Services;
 using MongoLogic.CRUD;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -20,7 +19,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Logger();
 
 builder.Services.AddAuthentication()
-.AddScheme<ApiOptions, ApiKeyAuthenticationHandler>("ApiKey", options => { });
+.AddScheme<ApiOptions, ApiKeyAuthenticationHandler>("ApiKey", options => 
+{
+    options.ApiKeyHeaderName= "x-api-key";
+    options.ApiKey = builder.Configuration.GetValue<string>("API_KEY")!;
+
+});
 
 
 builder.Services.AddControllers()

@@ -23,7 +23,6 @@ namespace Logger
            
 
             bool filterRangeOff = rawdata.Enddate is null;
-            //DateTime[]? Datetimerange = filterRangeOff ?  null : new DateTime[2];
             DateTime[]? Datetimerange = new DateTime[2];
             string StartdateOnly = string.Empty;
 
@@ -50,7 +49,7 @@ namespace Logger
 
                 int linecount = 0;
                 long offset = 1;
-                // fs.Seek(offset, SeekOrigin.End);
+        
 
                 for (; offset <= fs.Length && linecount <= seek; offset++)
                 {
@@ -129,7 +128,7 @@ namespace Logger
 
 
 
-                    // Console.WriteLine();
+                 
 
                     if (msg)
                         sb.AppendLine(line);
@@ -138,7 +137,7 @@ namespace Logger
             }
 
 
-            //  Console.WriteLine(sb.ToString());
+         
 
             return sb.ToString();
 

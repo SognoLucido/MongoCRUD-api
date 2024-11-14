@@ -9,53 +9,39 @@ namespace MongoCrudPeopleApi.Auth
 
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiOptions>  
     {
-        private const string ApiKeyHeaderName = "x-api-key";
-        private readonly string ApiKeyValue;
-     //   private readonly ILogger log ;
+      
 
 
         public ApiKeyAuthenticationHandler(
         IOptionsMonitor<ApiOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder , IConfiguration conf) : base(options, logger, encoder)
+        UrlEncoder encoder ) : base(options, logger, encoder)
         {
-            ApiKeyValue = conf["API_KEY"]!;
-           // log = logger.CreateLogger<ApiKeyAuthenticationHandler>();
+
         }
 
 
-        protected override  Task HandleChallengeAsync(AuthenticationProperties properties)
-        {
-            //var httpContext = Context;
-
-            //log.LogWarning("{}IP failed to authenticate", httpContext.Connection.RemoteIpAddress?.ToString());
-
-           
-            //Response.StatusCode = 401;
-            //Response.ContentType = "text/plain";
-            //return Response.WriteAsync("Authorization failed: No API key provided");
-
-            return base.HandleChallengeAsync(properties);
-  
-        }
 
         protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
 
+            
            
-            var keyexist = Request.Headers.Keys.Any(x=>x == "x-api-key");
+
+            var keyexist = Request.Headers.Keys.Any(x=>x == Options.ApiKeyHeaderName);
 
             if (!keyexist)
             {
                 return AuthenticateResult.NoResult();
             }
 
-            if (!Request.Headers.TryGetValue(ApiKeyHeaderName, out var providedApiKey))
+            if (!Request.Headers.TryGetValue(Options.ApiKeyHeaderName, out var providedApiKey))
             {
+                
                 return AuthenticateResult.NoResult();
             }
 
-            if (!ApiKeyValue.Equals(providedApiKey,StringComparison.OrdinalIgnoreCase))
+            if (!Options.ApiKey.Equals(providedApiKey,StringComparison.OrdinalIgnoreCase))
             {
                 return AuthenticateResult.NoResult();
             }
@@ -75,7 +61,11 @@ namespace MongoCrudPeopleApi.Auth
 
     public class ApiOptions : AuthenticationSchemeOptions
     {
-     
+        
+        public string ApiKeyHeaderName { get; set; }
+        public string ApiKey { get; set; }
+
+
     }
 
 

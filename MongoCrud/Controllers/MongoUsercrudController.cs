@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoCrudPeopleApi.Model;
-using Mongodb;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
 using MongoLogic.CRUD;
-using Serilog.Core;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 namespace MongoCrudPeopleApi.Controllers;

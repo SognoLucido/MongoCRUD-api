@@ -64,7 +64,7 @@ namespace MongoCrudPeopleApi.Controllers
         /// Seek logic is triggered before the StreamRead line-by-line date matching (open the file, navigate to the last x lines, then pass the seek position to the StreamReader ) </param>
         /// <returns></returns>
         [HttpPost("readfile")]
-        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput,uint? seek) // todo find logs by logerror + seek last x line
+        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput,uint? seek) 
         {
 
 
