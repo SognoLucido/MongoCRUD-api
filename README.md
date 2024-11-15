@@ -9,7 +9,7 @@ CRUD api Based on randomuser.me/api model
 - .net8
 - serilog(appsettings base config) console & file
 - Mvc Controllers
-- Minimal api (todo)
+- Minimal api (check branch)
 - apikey auth 
 - xunit  
 - Testcontainers   
@@ -33,6 +33,9 @@ The POST endpoint includes duplicate protection before inserting data into the d
 - [x] Logging to a file and retrieving log information using apikey
 - [x] Unit/Integ testing
 - [x] Docker implementation
+- [ ]  .net9
+- [ ]  Aspire
+- [ ] ms Openapi 
 
 
 
