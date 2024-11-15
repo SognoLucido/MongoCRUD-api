@@ -1,7 +1,9 @@
 using Bookstore_backend;
 using Logger;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
 using MongoCrudPeopleApi.Auth;
+using MongoCrudPeopleApi.MinimalEndpoints;
 using Mongodb;
 using Mongodb.Services;
 using MongoLogic.CRUD;
@@ -27,14 +29,16 @@ builder.Services.AddAuthentication()
 });
 
 
-builder.Services.AddControllers()
-    .AddJsonOptions(opt =>
+builder.Services.Configure<JsonOptions>(options =>
 {
-    opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-}); ;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+});
 
 
-//builder.Services.AddEndpointsApiExplorer();
+
+
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
 
@@ -83,9 +87,14 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
+app.UseUserEndpoints();
+
+app.UseAuthentication();
 
 
-app.MapControllers();
+
+app.UseLogEndpoints();
+
 
 app.Run();
 

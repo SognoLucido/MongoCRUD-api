@@ -6,7 +6,13 @@ using Mongodb.Models.Dto;
 using MongoLogic.CRUD;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+
+
+/*
 namespace MongoCrudPeopleApi.Controllers;
+
+
+
 
 
 [Route("api/user")]
@@ -73,7 +79,7 @@ public class MongoUsercrudController : ControllerBase
         {
 
             // we can also truncate with .limit() in the DB query to save resources 
-            // like await dbcall.GetAgerangeUserItem(minage, maxage ,  /*  truncate-option : bool/enum */)
+            // like await dbcall.GetAgerangeUserItem(minage, maxage ,    truncate-option : bool/enum )
 
             if (Result.Count < 100) return Ok(Result);
 
@@ -110,6 +116,9 @@ public class MongoUsercrudController : ControllerBase
 
     }
 
+
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -136,6 +145,11 @@ public class MongoUsercrudController : ControllerBase
 
 
     }
+
+
+
+
+
 
 
 
@@ -227,3 +241,7 @@ public class MongoUsercrudController : ControllerBase
 
 
 }
+
+
+
+*/

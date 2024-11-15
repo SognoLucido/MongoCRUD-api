@@ -4,20 +4,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-/*
-namespace MongoCrudPeopleApi.Controllers
+
+namespace MongoCrudPeopleApi.MinimalEndpoints
 {
-    
-  
-
     [Authorize]
-    [Route("logs")]
-    [Tags("z-Logs")]
-    [ApiController]
-    public class LogsController(LogService logservice) : Controller
+    public static class LogEndpoints
     {
+        public static async void UseLogEndpoints(this IEndpointRouteBuilder app)
+        {
 
-        private readonly LogService logdata = logservice;
+            var apiGroup = app.MapGroup("/logs").WithTags("Z-log").RequireAuthorization();
+
+            apiGroup.MapPost("", Writetologger);
+            apiGroup.MapPost("readfile", Readfile);
+
+        }
+
 
         /// <summary>
         ///  api key : 32B66F391C7142F994974A99C509817B    
@@ -32,15 +34,21 @@ namespace MongoCrudPeopleApi.Controllers
         /// <param name="body"> max lenght 50 : message - string </param>
         /// <param name="ex">enabling this will throw an exception</param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> Writetologger([FromBody][MaxLength(50)] string? body, LogLevelError level, [FromQuery(Name = "throw-exception")] bool ex = false)
+        private static async Task<IResult> Writetologger(
+            [FromBody][MaxLength(50)] string? body,
+            LogLevelError level,
+            LogService logdata,
+            [FromQuery(Name = "throw-exception")] bool ex = false)
         {
-
 
             await logdata.WriteLog(body, level, ex);
 
-            return Ok();
+            return Results.Ok();
         }
+
+
+
+
 
         /// <summary>
         /// retrieve logs based on filter criteria 
@@ -66,41 +74,37 @@ namespace MongoCrudPeopleApi.Controllers
         /// <param name="seek">Reads the last x lines from the file. Use only for a quick seek with option1.    
         /// Seek logic is triggered before the StreamRead line-by-line date matching (open the file, navigate to the last x lines, then pass the seek position to the StreamReader ) </param>
         /// <returns></returns>
-        [HttpPost("readfile")]
-        public async Task<IActionResult> Readfile([FromBody] DateDtomodel dateinput,uint? seek) 
+        private static async Task<IResult> Readfile(
+            [FromBody] DateDtomodel dateinput,
+            uint? seek,
+            LogService logdata
+            )
         {
-
-
 
             if (dateinput.Enddate is not null)
             {
-                if (dateinput.Startdate.Hour is null && ( dateinput.Startdate.Minute is not null || dateinput.Startdate.Second is not null)) return BadRequest("hour param is null");
+                if (dateinput.Startdate.Hour is null && (dateinput.Startdate.Minute is not null || dateinput.Startdate.Second is not null)) return Results.BadRequest("hour param is null");
 
-                if (dateinput.Enddate.Hour is null && (dateinput.Enddate.Minute is not null || dateinput.Enddate.Second is not null)) return BadRequest("hour param is null");
+                if (dateinput.Enddate.Hour is null && (dateinput.Enddate.Minute is not null || dateinput.Enddate.Second is not null)) return Results.BadRequest("hour param is null");
 
-                if (!DateTime.TryParse(dateinput.Enddate.ToString(), out var end)) return BadRequest("invalid enddate ");
+                if (!DateTime.TryParse(dateinput.Enddate.ToString(), out var end)) return Results.BadRequest("invalid enddate ");
 
-                if (!DateTime.TryParse(dateinput.Startdate.ToString(), out var start)) return BadRequest("invalid startdate ");
+                if (!DateTime.TryParse(dateinput.Startdate.ToString(), out var start)) return Results.BadRequest("invalid startdate ");
 
-                if (start >= end) return BadRequest("enddate must be later then startdate");
+                if (start >= end) return Results.BadRequest("enddate must be later then startdate");
             }
 
-        
+
 
             var data = await logdata.ReadLog(dateinput, seek);
 
-            return Ok(data);
-
-          
+            return Results.Text(data);
         }
 
-       
+
+
+
 
 
     }
-
-
-   
-
 }
- */
