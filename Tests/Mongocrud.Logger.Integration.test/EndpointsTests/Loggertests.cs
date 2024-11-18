@@ -108,7 +108,7 @@ public class Loggertests(ProgramTestApplicationFactory factory)
 
 
         Assert.Equal(HttpStatusCode.Unauthorized, Unauthorized.StatusCode);
-        Assert.True(data.All(p => p), "");
+        Assert.True(data.All(p => p));
 
     }
 

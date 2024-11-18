@@ -1,6 +1,6 @@
 using Bookstore_backend;
 using Logger;
-using Microsoft.AspNetCore.Http.Json;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using MongoCrudPeopleApi.Auth;
 using MongoCrudPeopleApi.MinimalEndpoints;
@@ -28,19 +28,20 @@ builder.Services.AddAuthentication()
 
 });
 
-
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-});
-
-
+builder.Services.AddAuthorization();
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
+
+    opt.MapType<LogLevelError>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Enum = Enum.GetNames(typeof(LogLevelError))
+            .Select(name => new OpenApiString(name))
+            .ToList<IOpenApiAny>()
+    });
 
     opt.AddSecurityDefinition("apikey", new OpenApiSecurityScheme
     {
@@ -80,19 +81,18 @@ builder.Services.AddSingleton<MongoContext>(_ => new(connectionString));
 builder.Services.AddScoped<IPeopleservice, Peopleservice>();
 builder.Services.AddScoped<LogService>();
 
+
 var app = builder.Build();
 
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 //app.UseHttpsRedirection();
 app.UseUserEndpoints();
-
-app.UseAuthentication();
-
-
-
 app.UseLogEndpoints();
 
 

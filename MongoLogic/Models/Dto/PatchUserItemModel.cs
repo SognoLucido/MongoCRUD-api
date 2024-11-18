@@ -4,12 +4,29 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mongodb.Models.Dto
 {
+
     public class PatchUserItemModel
     {
         public Guid? userid { get; set; }
 
         [EmailAddress]
         public string? email { get; set; }
+
+        public static bool TryParse(string? input, out PatchUserItemModel? result)
+        {
+
+           
+
+
+
+
+            result = new PatchUserItemModel() ;
+
+            return true ;
+        }
+
+
+
     }
 
 

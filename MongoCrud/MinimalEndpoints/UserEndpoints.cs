@@ -4,7 +4,6 @@ using MongoCrudPeopleApi.Model;
 using Mongodb.Models;
 using Mongodb.Models.Dto;
 using MongoLogic.CRUD;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
@@ -19,13 +18,14 @@ public static class UserEndpoints
 
         var apiGroup = app.MapGroup("api/user").WithTags("User");
 
-        //apiGroup.MapGet("/search", Getusersearch)
+        apiGroup.MapGet("search", Getusersearch);
         //     .Produces<List<PersonBaseModel>>(200);
 
         apiGroup.MapGet("byage-limit", GetbyAgeRange)
             .Produces<List<PersonBaseModel>>(200);
 
-        apiGroup.MapGet("byage-nolimit", GetbyAgeRange_nolimit);
+        apiGroup.MapGet("byage-nolimit", GetbyAgeRange_nolimit)
+            .ExcludeFromDescription();
 
         apiGroup.MapPatch("/", PatchUserItem);
 
@@ -43,32 +43,6 @@ public static class UserEndpoints
     }
 
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <remarks>
-    /// userid(uuid) OR email
-    /// </remarks>
-    /// <param name="patchdata"> Optional parameters; at least one is required </param>
-    /// <returns></returns>
-    private static async Task<IResult> PatchUserItem(
-         
-        [FromBody][Required] UserItemPatchModel patchdata,
-        //[FromQuery] PatchUserItemModel request,
-        IPeopleservice dbcall
-        )
-    {
-        //if (request.userid is null && request.email is null) return Results.BadRequest();
-        //if (request.userid is not null && request.email is not null) return Results.BadRequest("choose one ");
-
-        //var statuscode = await dbcall.PatchUseritem(request, patchdata);
-
-
-        //return Results.StatusCode(statuscode);
-
-        return Results.Ok();
-    }
-
 
 
 
@@ -79,17 +53,104 @@ public static class UserEndpoints
     /// <param name="Pagesize"> default = 100 items </param>
     /// <returns></returns>
     private static async Task<IResult> Getusersearch(
-          UsersModel search,
+           
+           //[FromQuery]UsersModel search,
+           [Length(3, 20)] string? firstname,
+           [Length(3, 20)] string? lastname,
+           [Length(3, 20)] string? state,
+           [Length(3, 20)] string? country,
+           [EmailAddress] string? email,
+           Guid? uuid,
+           [Range(1,150)]int? age,
+           string? phonenumber,
           IPeopleservice dbcall,
-          Pagesize Pagesize = Pagesize.i100,
-           [FromQuery(Name = "throw-exception")] bool ex = false
+          Pagesize Pagesize = Pagesize.i100
+          
         )
     {
-        var data = await dbcall.SearchUsers(search, Pagesize);
+
+        
+
+
+
+
+        var data = await dbcall.SearchUsers(new()
+        {
+            firstname = firstname,
+            lastname = lastname,
+            state = state,
+            country = country,
+            email = email,
+            uuid = uuid,
+            age = age,
+            phoneNumber = phonenumber
+
+        }, Pagesize);
 
         return data is null ? Results.NotFound() : Results.Ok(data);
 
     }
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// userid(uuid) OR email    
+    /// </remarks>
+    /// <param name="patchdata"> Optional parameters; at least one is required </param>
+    /// <returns></returns>
+    private static async Task<IResult> PatchUserItem(
+        Guid? userid,
+        [EmailAddress]string? email,
+        [FromBody]UserItemPatchModel patchdata,
+        //[FromQuery] PatchUserItemModel request,
+        IPeopleservice dbcall
+        )
+    {
+
+
+
+
+        if (userid is null && email is null) return Results.BadRequest();
+        if (userid is not null && email is not null) return Results.BadRequest("choose one ");
+
+
+        //Guid tempid = new();
+
+        //if(userid is not null )
+        //if(!Guid.TryParse(userid, out tempid)) return Results.BadRequest("invalid userid");
+
+        //if(!Regex.IsMatch(email, emailregex)) return Results.BadRequest("invalid email");
+
+
+        //Guid? RequestUserID;
+
+        var request = new PatchUserItemModel
+        {
+            userid = userid,
+            email = email,
+        };
+
+
+        var statuscode = await dbcall.PatchUseritem(request, patchdata);
+
+
+        return Results.StatusCode(statuscode);
+
+        //return Results.Ok();
+    }
+
+
+
+
+
 
 
 
@@ -102,8 +163,8 @@ public static class UserEndpoints
     /// </remarks>
     /// <returns></returns>
     private static async Task<IResult> GetbyAgeRange(
-         [FromQuery][Required][Range(0, 150)] int minage,
-         [FromQuery][Required][Range(0, 150)] int maxage,
+         [Range(0, 150)] int minage,
+         [Range(0, 150)] int maxage,
          IPeopleservice dbcall
         )
     {
@@ -131,8 +192,8 @@ public static class UserEndpoints
 
 
     private static async Task<IResult> GetbyAgeRange_nolimit(
-        [FromQuery][Required][Range(0, 150)] int minage,
-         [FromQuery][Required][Range(0, 150)] int maxage,
+        [Range(0, 150)] int minage,
+         [Range(0, 150)] int maxage,
          IPeopleservice dbcall
         )
     {
@@ -179,7 +240,7 @@ public static class UserEndpoints
     /// <param name="dupecheck"> check duplicates before insert in the database (true,false) , This does not remove existing records in the database</param>
     /// <returns></returns>
     private static async Task<IResult> PostUserItemModel(
-        [FromBody][Required] PersonApiModel Value,
+        [FromBody]PersonApiModel Value,
          IPeopleservice dbcall,
         bool dupecheck = true
         )
@@ -207,7 +268,7 @@ public static class UserEndpoints
     /// <param name="uuid_email"></param>
     /// <returns></returns>
     private static async Task<IResult> Delete(
-        [Required]string uuid_email,
+        [FromRoute]string uuid_email,
         IPeopleservice dbcall
         )
     {
