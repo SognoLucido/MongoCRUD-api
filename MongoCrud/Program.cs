@@ -30,6 +30,7 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
+builder.Services.Configure<RouteHandlerOptions>(o => o.ThrowOnBadRequest = false);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>

@@ -109,7 +109,7 @@ public static class UserEndpoints
     private static async Task<IResult> PatchUserItem(
         Guid? userid,
         [EmailAddress]string? email,
-        [FromBody]UserItemPatchModel patchdata,
+        UserItemPatchModel patchdata,
         //[FromQuery] PatchUserItemModel request,
         IPeopleservice dbcall
         )
@@ -240,7 +240,7 @@ public static class UserEndpoints
     /// <param name="dupecheck"> check duplicates before insert in the database (true,false) , This does not remove existing records in the database</param>
     /// <returns></returns>
     private static async Task<IResult> PostUserItemModel(
-        [FromBody]PersonApiModel Value,
+         PersonApiModel Value,
          IPeopleservice dbcall,
         bool dupecheck = true
         )
