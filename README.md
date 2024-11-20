@@ -37,7 +37,3 @@ The POST endpoint includes duplicate protection before inserting data into the d
 - [ ]  Aspire
 - [ ] ms Openapi 
 
-
-
-## Live Demo
-soon
